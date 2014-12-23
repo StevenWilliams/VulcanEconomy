@@ -1,7 +1,14 @@
 package net.vulcanmc.vulcaneconomy;
 
-/**
- * Created by steven on 23/12/14.
- */
-public class VulcanEconomy {
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class VulcanEconomy extends JavaPlugin{
+    @Override
+    public void onEnable() {
+
+    }
+    @Override
+    public void onDisable() {
+        
+    }
 }

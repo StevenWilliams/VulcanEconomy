@@ -3,3 +3,28 @@ version: ${project.version}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 description: |
     ${project.description}
+softdepend: [Vault, ScoreboardStats]
+commands:
+   balance:
+      description: Check your balance
+      aliases: [bal, money]
+      usage: /<command> [player]
+      permission: vulcan.economy.balance
+      permission-message: You don't have <permission>
+   balancetop:
+      description: Lists top balances
+      aliases: [baltop]
+      usage: /<command> [player]
+      permission: vulcan.economy.balancetop
+      permission-message: You don't have <permission>
+   pay:
+      description: Pay another player
+      usage: /<command> [player] [amount]
+      permission: vulcan.economy.pay
+      permission-message: You don't have <permission>
+   economy:
+      description: Manage the servers' economy
+      aliases: [eco]
+      usage: /<command> <give:take:set> [player] [amount]
+      permission: vulcan.economy.economy
+      permission-message: You don't have <permission>

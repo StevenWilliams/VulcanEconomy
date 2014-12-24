@@ -1,3 +1,10 @@
-server-id:
+server-id: 1
+#implement authentication
 server-token:
-currency-symbol: '$'
+api-url: "http://localhost:8000/api/v1/"
+
+starting-balance: 40
+allow-negative-balance: false;
+currencies:
+  dollars:
+    cache: true

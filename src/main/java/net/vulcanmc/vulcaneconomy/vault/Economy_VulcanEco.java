@@ -9,6 +9,7 @@ import net.vulcanmc.vulcaneconomy.rest.Currency;
 import net.vulcanmc.vulcaneconomy.rest.Users;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -86,11 +87,12 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public boolean hasAccount(String playername) {
-        if(Users.getUser(Bukkit.getPlayerExact(playername)).hasAccount(currency)) {
-            return true;
-        } else {
-            return false;
+        if (Users.userExists(Bukkit.getOfflinePlayer(playername).getUniqueId().toString())) {
+            if (Users.getUser(Bukkit.getPlayerExact(playername)).hasAccount(currency)) {
+                return true;
+            }
         }
+        return false;
     }
 
     @Override
@@ -100,7 +102,11 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public double getBalance(String playername) {
-        return Users.getUser(Bukkit.getPlayerExact(playername)).getAccount(currency).getBalance();
+        if(hasAccount(playername)) {
+            return Users.getUser(Bukkit.getPlayerExact(playername)).getAccount(currency).getBalance();
+        } else {
+            return -1;
+        }
     }
 
     @Override
@@ -145,8 +151,11 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playername) {
-        if(Accounts.createAccount(Bukkit.getPlayerExact(playername), currency) != null) {
-            return true;
+        OfflinePlayer player = Bukkit.getOfflinePlayer(playername);
+        if(!Users.getUser(player).hasAccount(new Currency())) {
+            if (Users.getUser(player).createAccount(new Currency()) != null){
+                return true;
+              }
         }
         return false;
     }
@@ -170,7 +179,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
         }
         Long roundedamount = Math.round(amount);
 
-        account.deposit((roundedamount));
+        account.deposit(roundedamount, "VaultAPI deposit");
 
         return new EconomyResponse(roundedamount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -190,7 +199,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
         Long roundedamount = Math.round(amount);
 
         if (account.has(roundedamount)) {
-            account.withdraw(roundedamount);
+            account.withdraw(roundedamount, "VaultAPI withdrawal");
             return new EconomyResponse(amount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
         } else {
             return new EconomyResponse(0, account.getBalance(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds");

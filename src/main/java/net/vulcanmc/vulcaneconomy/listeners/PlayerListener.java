@@ -3,6 +3,7 @@ package net.vulcanmc.vulcaneconomy.listeners;
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import net.vulcanmc.vulcaneconomy.rest.Accounts;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
+import net.vulcanmc.vulcaneconomy.rest.Users;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,12 +19,21 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
-    @EventHandler(priority = EventPriority.LOWEST)
+
+    @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-
-        //create account
-        Accounts.createAccount(player, new Currency());
+        if(!Users.userExists(player.getUniqueId().toString())) {
+            Users.createUser(player.getUniqueId().toString(), player.getName());
+        } else {
+            VulcanEconomy.plugin.getLogger().info("User exists");
+        }
+        if(!Users.getUser(player).hasAccount(new Currency()))
+        {
+            Users.getUser(player).createAccount(new Currency());
+        } else {
+            VulcanEconomy.plugin.getLogger().info("User has account");
+        }
     }
 
     @EventHandler

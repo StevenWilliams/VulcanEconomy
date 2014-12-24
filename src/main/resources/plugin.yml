@@ -24,7 +24,12 @@ commands:
       permission-message: You don't have <permission>
    economy:
       description: Manage the servers' economy
-      aliases: [eco]
-      usage: /<command> <give:take:set> [player] [amount]
-      permission: vulcan.economy.economy
+      aliases: [eco, ecomanage, economymanage, manageeco, manageeconomy]
+      usage: /<command> <give:take:set> [player] [amount] (description)
+      permission: vulcan.economy.manage
+      permission-message: You don't have <permission>
+   transactions:
+      description: Show's a player's transactions
+      usage: /<command> [player]
+      permission: vulcan.economy.transactions
       permission-message: You don't have <permission>

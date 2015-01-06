@@ -15,53 +15,58 @@ public class Users {
     public static User getUser(OfflinePlayer player) {
         return getUser(player.getPlayer());
     }
-    public static User getUser(Player player) {
-        UUID uuid = player.getUniqueId();
+    public static User getUser(Player user) {
+        return getUser(user.getUniqueId());
+    }
+    public static User getUser(UUID uuid) {
+        if(!VulcanEconomy.plugin.usercache.containsKey(uuid)) {
+            VulcanEconomy.plugin.usercache.put(uuid, new UserCache(uuid.toString()));
+            return VulcanEconomy.plugin.usercache.get(uuid).getUser();
+        } else {
+            return VulcanEconomy.plugin.usercache.get(uuid).getUser();
+        }
+    }
+    public static User getUser(String playername) {
         Integer playerid;
         //this.player = (Player) player;
         try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "players/").asJson().getBody();
+            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "players/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
             JSONArray jsonArray = response.getArray();
+            JSONArray data = response.getObject().getJSONArray("data");
+
             for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                String uuidobject = object.getString("uuid");
-                if(uuidobject.equals(uuid.toString())) {
+                JSONObject object = data.getJSONObject(i);
+                String usernameobject = object.getString("username");
+                if(usernameobject.equals(playername)) {
                     playerid = object.getInt("id");
-                    return new User(playerid);
+                    UUID uuid = UUID.fromString(object.getString("uuid"));
+                    User user1 = new User(playerid, uuid);
+                    return user1;
                 }
             }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
         return null;
+        //lookup with usernmae instead of uuid. fall back with mojang api
     }
-    public static boolean userExists(String uuid) {
-        JsonNode response = null;
-        try {
-            response = Unirest.get(VulcanEconomy.apiURL + "players/").asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                String uuidobject = object.getString("uuid");
-                if(uuidobject.equals(uuid.toString())) {
-                    return true;
-                }
-            }
-        } catch (UnirestException e) {
-            return false;
-            //VulcanEconomy.plugin.getLogger().info(e.getMessage());
+    public static boolean userExists(UUID uuid) {
+        if(!VulcanEconomy.plugin.usercache.containsKey(uuid)) {
+            VulcanEconomy.plugin.usercache.put(uuid, new UserCache(uuid.toString()));
+            return VulcanEconomy.plugin.usercache.get(uuid).userExists();
+        } else {
+            return VulcanEconomy.plugin.usercache.get(uuid).userExists();
         }
-        return false;
     }
-    public static User createUser(String uuid, String username) {
+    public static User createUser(UUID uuid, String username) {
         try {
-            JsonNode response = Unirest.post(VulcanEconomy.apiURL + "players").queryString("uuid", uuid).queryString("username", username).asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                Integer playerid = object.getInt("id");
-                return new User(playerid);
-            }
+            JsonNode response = Unirest.post(VulcanEconomy.apiURL + "players").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("uuid", uuid.toString()).queryString("username", username).asJson().getBody();
+            JSONObject data = response.getObject().getJSONObject("data");
+
+                Integer playerid = data.getInt("id");
+                User user = new User(playerid, uuid);
+                VulcanEconomy.plugin.usercache.get(uuid).setUser(user);
+                return user;
         } catch (UnirestException e) {
             e.printStackTrace();
         }

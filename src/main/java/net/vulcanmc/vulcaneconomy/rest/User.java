@@ -1,11 +1,10 @@
 package net.vulcanmc.vulcaneconomy.rest;
 
-import com.mashape.unirest.http.HttpResponse;
-import org.json.JSONArray;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.json.JSONObject;
@@ -17,67 +16,59 @@ public class User {
     private UUID uuid;
     private Player player;
     private Integer playerid;
+    private AccountCache accountcache;
 
     public List<Account> getAccounts() {
         return Accounts.getAccountsByPlayer(player);
     }
-    public Player getPlayer() {
-        return null;
+    public OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(this.uuid);
     }
-    public User(Integer playerid) {
+    public User(Integer playerid, UUID uuid) {
         this.playerid = playerid;
-    }
-
-
-    public Account getAccount(Currency currency) {
-        Long accountid = -1L;
-        try {
-            JsonNode response =  Unirest.get(VulcanEconomy.apiURL + "players/" + playerid + "/accounts").asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                //ADD currency checks later...
-                /*String currencyobject = object.getString("currency");
-                if(currencyobject.equals(currency.getName())) {
-                    accountid = object.getLong("id");
-                }*/
-                accountid = object.getLong("id");
-                return new Account(accountid);
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
+        this.uuid = uuid;
+        if(!VulcanEconomy.plugin.accountcache.containsKey(this.playerid)) {
+            //VulcanEconomy.plugin.getLogger().info("account cache does not contain key...");
+            this.accountcache = new AccountCache(this);
+            VulcanEconomy.plugin.accountcache.put(this.playerid, this.accountcache);
+        } else {
+            //VulcanEconomy.plugin.getLogger().info("account cache does contain key...");
+            this.accountcache = VulcanEconomy.plugin.accountcache.get(this.playerid);
         }
-        return null;
+    }
+    public Account getAccount(Currency currency) {
+        return this.accountcache.getAccount(currency);
     }
     public Account createAccount(Currency currency) {
             try {
-                JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/").queryString("accountOwner", playerid).queryString("server", VulcanEconomy.serverid).queryString("currency", new Currency().getNameSingle()).asJson().getBody();
-                JSONArray jsonArray = response.getArray();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject object = jsonArray.getJSONObject(i);
-                    Long accountid = object.getLong("id");
-                    return new Account(accountid);
-                }
+                JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("accountOwner", playerid).queryString("server", VulcanEconomy.serverid).queryString("currency", new Currency().getNameSingle()).asJson().getBody();
+
+                JSONObject data = response.getObject().getJSONObject("data");
+
+                    Long accountid = data.getLong("id");
+                    Account account = new Account(accountid);
+                    VulcanEconomy.plugin.accountcache.get(this.playerid).setAccount(account);
+                    return account;
             } catch (UnirestException e) {
                 e.printStackTrace();
             }
             return null;
         }
-    public boolean hasAccount(Currency currency) {
-        JsonNode response = null;
-        try {
-            response = Unirest.get(VulcanEconomy.apiURL + "accounts/").asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                Integer account_owner = object.getInt("account_owner");
-                if(account_owner == playerid) {
-                    return true;
-                }
-            }
-        } catch (UnirestException e) {
-            VulcanEconomy.plugin.getLogger().info(e.getMessage());
+    public boolean hasAccount(Currency currency)
+    {
+        if(!VulcanEconomy.plugin.accountcache.containsKey(this.playerid)) {
+            this.accountcache = new AccountCache(this);
+            VulcanEconomy.plugin.accountcache.put(this.playerid, this.accountcache);
+            //VulcanEconomy.plugin.getLogger().info("account cache has does not contain key...");
+            return this.accountcache.hasAccount(currency);
+        } else {
+            //VulcanEconomy.plugin.getLogger().info("account cache has does contain key...");
+            this.accountcache = VulcanEconomy.plugin.accountcache.get(this.playerid);
+            return this.accountcache.hasAccount(currency);
         }
-        return false;
+    }
+    public Long getId()
+    {
+        return Long.valueOf(this.playerid);
     }
 }

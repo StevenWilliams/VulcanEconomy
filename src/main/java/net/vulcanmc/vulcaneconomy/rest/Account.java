@@ -7,28 +7,21 @@ import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.UUID;
-
 public class Account {
     private long accountid;
     public long getBalance() {
-        Long balance = -1L;
-        try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "accounts/" + accountid).asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                balance = object.getLong("balance");
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }
-        return balance;
+        return VulcanEconomy.plugin.balancecache.get(this.accountid).getBalance();
     }
     public Account(Long accountid) {
         this.accountid = accountid;
+        if(!VulcanEconomy.plugin.balancecache.containsKey(this.accountid)) {
+            VulcanEconomy.plugin.balancecache.put(this.accountid, new BalanceCache(this));
+        } else {
+           VulcanEconomy.plugin.balancecache.get(this.accountid);
+        }
     }
     public User getOwner() {
+        /*
         Integer userid = -1;
         try {
             JsonNode response = Unirest.get(VulcanEconomy.apiURL + "accounts/" + accountid).asJson().getBody();
@@ -41,20 +34,20 @@ public class Account {
             e.printStackTrace();
         }
         if(userid != -1) {
-            return new User(userid);
+            return new User(userid, );
         }
+        return null;
+        */
         return null;
     }
 
     public Transaction createTransaction(String type, Long amount, String description) {
         try {
-            JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/" + this.accountid + "/transactions").queryString("account", this.accountid).queryString("type", type).queryString("description", description).queryString("amount", amount).asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                Long transactionid = object.getLong("id");
+            JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/" + this.accountid + "/transactions").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("account", this.accountid).queryString("type", type).queryString("description", description).queryString("amount", amount).asJson().getBody();
+
+                JSONObject data = response.getObject().getJSONObject("data");
+                Long transactionid = data.getLong("id");
                 return new Transaction(transactionid);
-            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
@@ -74,6 +67,7 @@ public class Account {
         if(has(amount)) {
             Transaction transaction = createTransaction(Transaction.TransactionType.DEBIT.toString(), amount, description);
             if(transaction != null) {
+                VulcanEconomy.plugin.balancecache.get(this.accountid).withdraw(amount);
                 return transaction;
             }
         }
@@ -86,6 +80,7 @@ public class Account {
     public Transaction deposit(long amount, String description) {
             Transaction transaction = createTransaction(Transaction.TransactionType.CREDIT.toString(), amount, description);
             if(transaction != null) {
+                VulcanEconomy.plugin.balancecache.get(this.accountid).deposit(amount);
                 return transaction;
             }
         return null;
@@ -95,5 +90,8 @@ public class Account {
             return true;
         }
         return false;
+    }
+    public Long getId() {
+        return this.accountid;
     }
 }

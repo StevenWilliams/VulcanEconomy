@@ -1,5 +1,6 @@
 package net.vulcanmc.vulcaneconomy.commands;
 
+import org.bukkit.ChatColor;
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,9 +15,9 @@ public class BalanceTop implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        sender.sendMessage("Balance Top");
-        sender.sendMessage("1. puppy3276, $5000");
-        sender.sendMessage("2. That1Guy2, $3000");
+        sender.sendMessage(ChatColor.GOLD + "Balance Top");
+        sender.sendMessage(ChatColor.AQUA + "1. puppy3276, $5000");
+        sender.sendMessage(ChatColor.AQUA + "2. That1Guy2, $3000");
         return true;
     }
 }

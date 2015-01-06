@@ -1,12 +1,11 @@
 package net.vulcanmc.vulcaneconomy.listeners;
 
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
-import net.vulcanmc.vulcaneconomy.rest.Accounts;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
+import net.vulcanmc.vulcaneconomy.rest.User;
 import net.vulcanmc.vulcaneconomy.rest.Users;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -17,25 +16,27 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(VulcanEconomy plugin) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-        if(!Users.userExists(player.getUniqueId().toString())) {
-            Users.createUser(player.getUniqueId().toString(), player.getName());
+        if(!Users.userExists(player.getUniqueId())) {
+            VulcanEconomy.plugin.getLogger().info(("Creating user: " + player.getName() + "/" + player.getUniqueId()));
+            Users.createUser(player.getUniqueId(), player.getName());
         } else {
-            VulcanEconomy.plugin.getLogger().info("User exists");
+            //VulcanEconomy.plugin.getLogger().info("User exists");
         }
-        if(!Users.getUser(player).hasAccount(new Currency()))
+        User user = Users.getUser(player);
+
+        if(!user.hasAccount(new Currency()))
         {
-            Users.getUser(player).createAccount(new Currency());
+            VulcanEconomy.plugin.getLogger().info(("Creating account: " + player.getName() + "/" + player.getUniqueId()));
+            user.createAccount(new Currency());
         } else {
-            VulcanEconomy.plugin.getLogger().info("User has account");
+            //VulcanEconomy.plugin.getLogger().info("User has account");
         }
     }
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -44,18 +45,15 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        /*
-        Database database = plugin.getFeDatabase();
 
-        Player player = event.getPlayer();
-
-        Account account = database.getCachedAccount(player.getName(), player.getUniqueId().toString());
-
-        if (account != null) {
-            account.save(account.getMoney());
-
-            database.removeCachedAccount(account);
+        //also remove other keys (account and balance)
+        User user = Users.getUser(event.getPlayer().getUniqueId());
+        if(VulcanEconomy.plugin.accountcache.containsKey(user.getId())) {
+            VulcanEconomy.plugin.accountcache.remove(user.getId());
         }
-        */
+        if(VulcanEconomy.plugin.usercache.containsKey(event.getPlayer().getUniqueId())) {
+            VulcanEconomy.plugin.usercache.remove(event.getPlayer().getUniqueId());
+        }
+
     }
 }

@@ -1,8 +1,9 @@
 server-id: 1
-#implement authentication
-server-token:
-api-url: "http://localhost:8000/api/v1/"
+api-username: prison
+api-password: prisonpass1234RV7$e
+api-url: "http://104.236.62.75/api/v1"
 
+#Ignored
 starting-balance: 40
 allow-negative-balance: false;
 currencies:

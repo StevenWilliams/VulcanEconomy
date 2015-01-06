@@ -19,7 +19,7 @@ commands:
       permission-message: You don't have <permission>
    pay:
       description: Pay another player
-      usage: /<command> [player] [amount]
+      usage: /<command> [player] [amount] (description)
       permission: vulcan.economy.pay
       permission-message: You don't have <permission>
    economy:

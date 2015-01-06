@@ -4,12 +4,11 @@ import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import net.vulcanmc.vulcaneconomy.rest.Account;
-import net.vulcanmc.vulcaneconomy.rest.Accounts;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
+import net.vulcanmc.vulcaneconomy.rest.User;
 import net.vulcanmc.vulcaneconomy.rest.Users;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -87,12 +86,25 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public boolean hasAccount(String playername) {
-        if (Users.userExists(Bukkit.getOfflinePlayer(playername).getUniqueId().toString())) {
-            if (Users.getUser(Bukkit.getPlayerExact(playername)).hasAccount(currency)) {
+        /*
+        try {
+
+            UUID uuid = VulcanEconomy.plugin.getUUID(playername);
+            if (uuid == null) {
                 return true;
+                //prevent essentials from handling...
             }
-        }
-        return false;
+            if (Users.userExists(profile.getUniqueId()) && Users.getUser(profile.getUniqueId()).hasAccount(new Currency())) {
+                   return true;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        //prevents essentials from handling
+        return true;
+        //return false;
     }
 
     @Override
@@ -102,13 +114,40 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public double getBalance(String playername) {
-        if(hasAccount(playername)) {
-            return Users.getUser(Bukkit.getPlayerExact(playername)).getAccount(currency).getBalance();
-        } else {
-            return -1;
-        }
-    }
 
+            /*
+            Profile profile = VulcanEconomy.resolver.findByName(playername);
+            if (profile == null) {
+                if(Bukkit.getPlayer(playername) != null) {
+                    Player player = Bukkit.getPlayer(playername);
+                    return Users.getUser(player).getAccount(currency).getBalance();
+                } else {
+                    return Users.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency).getBalance();
+                }
+                //return -1;
+            }*/
+            User user = Users.getUser(VulcanEconomy.plugin.getUUID(playername));
+            if (user == null) {
+                return -1;
+            }
+            if (user.hasAccount(currency)) {
+                    return user.getAccount(currency).getBalance();
+            }
+        return -1;
+    }
+    @Override
+    public double getBalance(OfflinePlayer offlinePlayer, String worldName) {
+        return getBalance(offlinePlayer);
+    }
+    /*
+    @Override
+    public double getBalance(OfflinePlayer player) {
+        UUID uuid = player.getUniqueId();
+        if (Users.userExists(uuid) && Users.getUser(uuid).hasAccount(currency)) {
+            return Users.getUser(uuid).getAccount(currency).getBalance();
+        }
+        return -1;
+    }*/
     @Override
     public double getBalance(String playername, String worldname) {
         return getBalance(playername);
@@ -151,9 +190,8 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playername) {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(playername);
-        if(!Users.getUser(player).hasAccount(new Currency())) {
-            if (Users.getUser(player).createAccount(new Currency()) != null){
+        if(!Users.getUser(VulcanEconomy.plugin.getUUID(playername)).hasAccount(new Currency())) {
+            if (Users.getUser(VulcanEconomy.plugin.getUUID(playername)).createAccount(new Currency()) != null){
                 return true;
               }
         }
@@ -172,7 +210,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
         }
 
-        Account account = Users.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
+        Account account = Users.getUser(VulcanEconomy.plugin.getUUID(playername)).getAccount(currency);
 
         if (account == null) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist");

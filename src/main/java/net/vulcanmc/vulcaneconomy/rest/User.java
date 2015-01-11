@@ -43,9 +43,15 @@ public class User {
             try {
                 JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("accountOwner", playerid).queryString("server", VulcanEconomy.serverid).queryString("currency", new Currency().getNameSingle()).asJson().getBody();
 
-                JSONObject data = response.getObject().getJSONObject("data");
+                if (response.getObject().isNull("data")) {
+                    VulcanEconomy.plugin.accountcache.get(this.playerid).lookupHasAccount(new Currency());
+                    VulcanEconomy.plugin.getLogger().info(response.toString());
+                    return VulcanEconomy.plugin.accountcache.get(this.playerid).lookupGetAccount(new Currency());
 
+                }
+                JSONObject data = response.getObject().getJSONObject("data");
                     Long accountid = data.getLong("id");
+                     VulcanEconomy.plugin.getLogger().info("createdacccid: " + accountid);
                     Account account = new Account(accountid);
                     VulcanEconomy.plugin.accountcache.get(this.playerid).setAccount(account);
                     return account;

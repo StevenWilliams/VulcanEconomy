@@ -25,17 +25,18 @@ public class PlayerListener implements Listener {
             VulcanEconomy.plugin.getLogger().info(("Creating user: " + player.getName() + "/" + player.getUniqueId()));
             Users.createUser(player.getUniqueId(), player.getName());
         } else {
+            User user = Users.getUser(player);
             //VulcanEconomy.plugin.getLogger().info("User exists");
+            if(!user.hasAccount(new Currency()))
+            {
+                VulcanEconomy.plugin.getLogger().info(("Creating account: " + player.getName() + "/" + player.getUniqueId()));
+                user.createAccount(new Currency());
+            } else {
+                //VulcanEconomy.plugin.getLogger().info("User has account");
+            }
         }
-        User user = Users.getUser(player);
 
-        if(!user.hasAccount(new Currency()))
-        {
-            VulcanEconomy.plugin.getLogger().info(("Creating account: " + player.getName() + "/" + player.getUniqueId()));
-            user.createAccount(new Currency());
-        } else {
-            //VulcanEconomy.plugin.getLogger().info("User has account");
-        }
+
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

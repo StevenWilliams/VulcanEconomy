@@ -61,6 +61,7 @@ public class Users {
     public static User createUser(UUID uuid, String username) {
         try {
             JsonNode response = Unirest.post(VulcanEconomy.apiURL + "players").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("uuid", uuid.toString()).queryString("username", username).asJson().getBody();
+
             JSONObject data = response.getObject().getJSONObject("data");
 
                 Integer playerid = data.getInt("id");

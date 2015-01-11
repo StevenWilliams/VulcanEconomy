@@ -22,17 +22,17 @@ public class AccountCache {
     }
     public boolean hasAccount(Currency currency) {
         if(GetLastLookup == null) {
-            //VulcanEconomy.plugin.getLogger().info("No accounthas cache");
+          //  VulcanEconomy.plugin.getLogger().info("No accounthas cache");
             //VulcanEconomy.plugin.getLogger().info("Player id =" + this.playerid);
             return lookupHasAccount(currency);
         } else {
             //30 minute cache
             if(GetLastLookup > System.currentTimeMillis() - 1800000) {
                 if(this.hasAccount == true) {
-                    //VulcanEconomy.plugin.getLogger().info("accounthas cache true!");
+                   // VulcanEconomy.plugin.getLogger().info("accounthas cache true!");
                     return this.hasAccount;
                 } else {
-                   // VulcanEconomy.plugin.getLogger().info("accounthas cache fale, checking again!");
+                   //VulcanEconomy.plugin.getLogger().info("accounthas cache fale, checking again!");
                     return lookupHasAccount(currency);
                 }
             } else {
@@ -53,7 +53,8 @@ public class AccountCache {
             for (int i = 0; i < data.length(); i++) {
                 JSONObject object = data.getJSONObject(i);
                 Long account_owner = object.getLong("account_owner");
-                if(account_owner == playerid) {
+                //VulcanEconomy.plugin.getLogger().info("Playerid = " + playerid + ", looking at " + account_owner);
+                if(account_owner == playerid || account_owner.equals(playerid)) {
                     this.hasAccount = true;
                     this.HasLastLookup = System.currentTimeMillis();
                     this.GetLastLookup = System.currentTimeMillis();
@@ -69,7 +70,7 @@ public class AccountCache {
     }
     public Account getAccount(Currency currency) {
         if(GetLastLookup == null) {
-           // VulcanEconomy.plugin.getLogger().info("No accountget cache");
+           //VulcanEconomy.plugin.getLogger().info("No accountget cache");
             return lookupGetAccount(currency);
         } else {
             //15 minute cache
@@ -77,7 +78,7 @@ public class AccountCache {
                 //VulcanEconomy.plugin.getLogger().info("using accountget cache");
                 return this.account;
             } else {
-                //VulcanEconomy.plugin.getLogger().info("accountget cache outdated!");
+                VulcanEconomy.plugin.getLogger().info("accountget cache outdated!");
                 return lookupGetAccount(currency);
             }
         }

@@ -27,12 +27,12 @@ public class UserCache {
     }
     public boolean userExists() {
         if(ExistsLastLookup == null) {
-            //VulcanEconomy.plugin.getLogger().info("No cache");
+            //VulcanEconomy.plugin.getLogger().info("No user cache");
             return lookupUserExists();
         } else {
-            //5 minute cache
+           // 5 minute cache
             if(ExistsLastLookup > System.currentTimeMillis() - 300000) {
-                //VulcanEconomy.plugin.getLogger().info("Using user cache");
+               // VulcanEconomy.plugin.getLogger().info("Using user cache");
                 return this.userExists;
             } else {
                 //VulcanEconomy.plugin.getLogger().info("user cache outdated!");

@@ -73,6 +73,16 @@ public class Account {
         }
         return null;
     }
+
+
+    public Transaction withdrawAsync(long amount, String description) {
+         return null;
+        //todo
+    }
+    public Transaction withdrawAsync(long amount) {
+        return withdrawAsync(amount, "No description");
+    }
+
     public Transaction deposit(long amount) {
 
         return deposit(amount, "No description");

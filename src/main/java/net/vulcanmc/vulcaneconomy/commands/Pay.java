@@ -42,6 +42,10 @@ public class Pay implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Cannot pay lower than 0...");
                     return false;
                 }
+                if (amount == 0) {
+                    sender.sendMessage(ChatColor.RED + "Cannot pay 0");
+                    return false;
+                }
                 if(payinguser.getAccount(new Currency()).has(amount)) {
                     payinguser.getAccount(new Currency()).withdraw(amount, description + "(Payment to userid:" + payeduser.getId() + ")");
                     payeduser.getAccount(new Currency()).deposit(amount, description + "(Payment from userid:" + payeduser.getId() + ")");

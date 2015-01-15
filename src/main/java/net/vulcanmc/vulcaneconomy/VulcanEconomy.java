@@ -1,4 +1,5 @@
 package net.vulcanmc.vulcaneconomy;
+
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -21,8 +22,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
 
@@ -31,9 +32,9 @@ public class VulcanEconomy extends JavaPlugin{
     public static String apiURL;
     public static Integer serverid;
     public static ProfileService resolver;
-    public HashMap<Long, BalanceCache> balancecache = new HashMap<>();
-    public HashMap<Integer, AccountCache> accountcache = new HashMap<>();
-    public HashMap<UUID, UserCache> usercache = new HashMap<>();
+    public ConcurrentHashMap<Long, BalanceCache> balancecache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, AccountCache> accountcache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<UUID, UserCache> usercache = new ConcurrentHashMap<>();
     public  SQLiteCache cache;
     public String apiUser;
     public String apiPass;
@@ -117,6 +118,12 @@ public class VulcanEconomy extends JavaPlugin{
     }
     @Override
     public void onDisable() {
+
+        try {
+            Unirest.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         plugin = null;
     }
 

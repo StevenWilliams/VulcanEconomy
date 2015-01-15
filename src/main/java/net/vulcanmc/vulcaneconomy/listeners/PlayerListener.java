@@ -7,8 +7,8 @@ import net.vulcanmc.vulcaneconomy.rest.Users;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -19,23 +19,22 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-        if(!Users.userExists(player.getUniqueId())) {
-            VulcanEconomy.plugin.getLogger().info(("Creating user: " + player.getName() + "/" + player.getUniqueId()));
-            Users.createUser(player.getUniqueId(), player.getName());
+    public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
+        if(!Users.userExists(event.getUniqueId())) {
+            VulcanEconomy.plugin.getLogger().info(("Creating user: " + event.getName() + "/" + event.getUniqueId()));
+            Users.createUser(event.getUniqueId(), event.getName());
         } else {
-            User user = Users.getUser(player);
-            //VulcanEconomy.plugin.getLogger().info("User exists");
-            if(!user.hasAccount(new Currency()))
-            {
-                VulcanEconomy.plugin.getLogger().info(("Creating account: " + player.getName() + "/" + player.getUniqueId()));
-                user.createAccount(new Currency());
-            } else {
-                //VulcanEconomy.plugin.getLogger().info("User has account");
-            }
-        }
 
+        }
+        User user = Users.getUser(event.getUniqueId());
+        //VulcanEconomy.plugin.getLogger().info("User exists");
+        if(!user.hasAccount(new Currency()))
+        {
+            VulcanEconomy.plugin.getLogger().info(("Creating account: " + event.getName() + "/" + event.getUniqueId()));
+            user.createAccount(new Currency());
+        } else {
+            //VulcanEconomy.plugin.getLogger().info("User has account");
+        }
 
     }
     @EventHandler

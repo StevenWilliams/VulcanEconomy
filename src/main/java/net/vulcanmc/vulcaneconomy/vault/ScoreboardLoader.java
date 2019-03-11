@@ -1,5 +1,5 @@
 package net.vulcanmc.vulcaneconomy.vault;
-
+/*
 import com.github.games647.scoreboardstats.ScoreboardStats;
 import org.bukkit.plugin.Plugin;
 
@@ -12,3 +12,4 @@ public class ScoreboardLoader {
         }
     }
 }
+*/

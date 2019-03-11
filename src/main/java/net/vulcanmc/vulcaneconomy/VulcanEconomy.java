@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
+//import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
 
 public class VulcanEconomy extends JavaPlugin{
     private static VulcanEconomy plugin;
@@ -83,7 +83,7 @@ public class VulcanEconomy extends JavaPlugin{
         File file = new File("uuidcache.sqlite");
 
         if(getPlugin().getServer().getPluginManager().getPlugin("ScoreboardStats") != null) {
-            load(this);
+            //load(this);
         }
 
     }

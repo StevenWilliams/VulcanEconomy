@@ -55,6 +55,7 @@ public class Account {
             Request request = new Request(VulcanEconomy.getApiURL() + "accounts/" + this.accountid + "/transactions", "PUT", obj);
 
             if(queue) {
+                VulcanEconomy.getPlugin().getBalancecache().remove(accountid);
                 VulcanEconomy.getPlugin().getQueue().addRequest(request);
             } else {
                 JsonNode response = request.execute().getBody();/*
@@ -85,6 +86,7 @@ public class Account {
                 return transaction;
             }
         }
+        //todo: check null checks
         return null;
     }
 

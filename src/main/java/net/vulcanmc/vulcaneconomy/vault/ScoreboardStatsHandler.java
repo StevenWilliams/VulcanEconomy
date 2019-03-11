@@ -1,6 +1,6 @@
 package net.vulcanmc.vulcaneconomy.vault;
 
-
+/*
 import com.github.games647.scoreboardstats.variables.Replaceable;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
 import net.vulcanmc.vulcaneconomy.rest.User;
@@ -24,3 +24,4 @@ public class ScoreboardStatsHandler implements Replaceable {
         return UNKOWN_VARIABLE;
     }
 }
+*/

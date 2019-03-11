@@ -22,7 +22,7 @@ public class Pay implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length >= 2) {
-                UUID uuid = VulcanEconomy.plugin.getUUIDIfExists(args[0]);
+                UUID uuid = VulcanEconomy.getPlugin().getUUIDIfExists(args[0]);
             if(uuid == null ) {
                 sender.sendMessage(ChatColor.RED + "Null profile lookup for " + args[0]);
                 return false;

@@ -11,6 +11,7 @@ import net.vulcanmc.vulcaneconomy.commands.*;
 import net.vulcanmc.vulcaneconomy.listeners.PlayerListener;
 import net.vulcanmc.vulcaneconomy.rest.AccountCache;
 import net.vulcanmc.vulcaneconomy.rest.BalanceCache;
+import net.vulcanmc.vulcaneconomy.rest.RequestsQueue;
 import net.vulcanmc.vulcaneconomy.rest.UserCache;
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco;
 import org.bukkit.Bukkit;
@@ -28,20 +29,42 @@ import java.util.concurrent.ConcurrentHashMap;
 import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
 
 public class VulcanEconomy extends JavaPlugin{
-    public static VulcanEconomy plugin;
-    public static String apiURL;
-    public static Integer serverid;
-    public static ProfileService resolver;
-    public ConcurrentHashMap<Long, BalanceCache> balancecache = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Integer, AccountCache> accountcache = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<UUID, UserCache> usercache = new ConcurrentHashMap<>();
-    public  SQLiteCache cache;
-    public String apiUser;
-    public String apiPass;
+    private static VulcanEconomy plugin;
+    private static String apiURL;
+    private static Integer serverid;
+    private static ProfileService resolver;
+    private ConcurrentHashMap<Long, BalanceCache> balancecache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, AccountCache> accountcache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UUID, UserCache> usercache = new ConcurrentHashMap<>();
+    private SQLiteCache cache;
+    private String apiUser;
+    private String apiPass;
+    private RequestsQueue queue;
+
+    public static VulcanEconomy getPlugin() {
+        return plugin;
+    }
+
+    public static String getApiURL() {
+        return apiURL;
+    }
+
+    public static Integer getServerid() {
+        return serverid;
+    }
+
+    public static ProfileService getResolver() {
+        return resolver;
+    }
+
+    public RequestsQueue getQueue() {
+        return queue;
+    }
 
     @Override
     public void onEnable() {
         plugin = this;
+        this.queue = new RequestsQueue();
         this.saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         //remember to disable commands in essentials config.
@@ -59,7 +82,7 @@ public class VulcanEconomy extends JavaPlugin{
         this.resolver = HttpRepositoryService.forMinecraft();
         File file = new File("uuidcache.sqlite");
 
-        if(plugin.getServer().getPluginManager().getPlugin("ScoreboardStats") != null) {
+        if(getPlugin().getServer().getPluginManager().getPlugin("ScoreboardStats") != null) {
             load(this);
         }
 
@@ -74,7 +97,7 @@ public class VulcanEconomy extends JavaPlugin{
         UUID uuid = null;
         //this.player = (Player) player;
         try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "players/").basicAuth(this.apiUser, this.apiPass).asJson().getBody();
+            JsonNode response = Unirest.get(VulcanEconomy.getApiURL() + "players/").basicAuth(this.getApiUser(), this.getApiPass()).asJson().getBody();
 
             JSONArray data = response.getObject().getJSONArray("data");
 
@@ -102,7 +125,7 @@ public class VulcanEconomy extends JavaPlugin{
         UUID uuid = getUUIDIfExists(playername);
             if(uuid == null) {
                 try {
-                    Profile profile = this.resolver.findByName(playername);
+                    Profile profile = this.getResolver().findByName(playername);
                     if(profile != null) {
                         uuid = profile.getUniqueId();
                         return uuid;
@@ -136,5 +159,29 @@ public class VulcanEconomy extends JavaPlugin{
 
         getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, new Economy_VulcanEco(this), this, ServicePriority.Highest);
         //getServer().getServicesManager().unregister(net.milkbowl.vault.economy.Economy.class, net.milkbowl.vault.economy.plugins.Economy_Essentials.class);
+    }
+
+    public ConcurrentHashMap<Long, BalanceCache> getBalancecache() {
+        return balancecache;
+    }
+
+    public ConcurrentHashMap<Integer, AccountCache> getAccountcache() {
+        return accountcache;
+    }
+
+    public ConcurrentHashMap<UUID, UserCache> getUsercache() {
+        return usercache;
+    }
+
+    public SQLiteCache getCache() {
+        return cache;
+    }
+
+    public String getApiUser() {
+        return apiUser;
+    }
+
+    public String getApiPass() {
+        return apiPass;
     }
 }

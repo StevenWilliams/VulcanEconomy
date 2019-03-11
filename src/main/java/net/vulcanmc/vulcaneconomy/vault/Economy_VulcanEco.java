@@ -126,7 +126,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
                 }
                 //return -1;
             }*/
-            User user = Users.getUser(VulcanEconomy.plugin.getUUID(playername));
+            User user = Users.getUser(VulcanEconomy.getPlugin().getUUID(playername));
             if (user == null) {
                 return -1;
             }
@@ -190,8 +190,8 @@ public class Economy_VulcanEco  extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playername) {
-        if(!Users.getUser(VulcanEconomy.plugin.getUUID(playername)).hasAccount(new Currency())) {
-            if (Users.getUser(VulcanEconomy.plugin.getUUID(playername)).createAccount(new Currency()) != null){
+        if(!Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).hasAccount(new Currency())) {
+            if (Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).createAccount(new Currency()) != null){
                 return true;
               }
         }
@@ -210,7 +210,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
         }
 
-        Account account = Users.getUser(VulcanEconomy.plugin.getUUID(playername)).getAccount(currency);
+        Account account = Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).getAccount(currency);
 
         if (account == null) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist");

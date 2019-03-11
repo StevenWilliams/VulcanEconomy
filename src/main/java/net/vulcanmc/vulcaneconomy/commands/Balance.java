@@ -26,7 +26,7 @@ public class Balance implements CommandExecutor {
         if(args.length == 1) {
             try {
 
-                UUID uuid = VulcanEconomy.plugin.getUUIDIfExists(args[0]);
+                UUID uuid = VulcanEconomy.getPlugin().getUUIDIfExists(args[0]);
                 if(uuid == null ) {
                     sender.sendMessage(ChatColor.RED + "Null profile lookup for " + args[0]);
                     return false;

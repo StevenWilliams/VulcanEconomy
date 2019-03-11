@@ -24,7 +24,7 @@ public class Economy implements CommandExecutor {
         if(args.length >= 3) {
             String subcommand = args[0];
             //target uuid
-            UUID uuid = VulcanEconomy.plugin.getUUID(args[1]);
+            UUID uuid = VulcanEconomy.getPlugin().getUUID(args[1]);
             if(uuid == null ) {
                 sender.sendMessage(ChatColor.RED + "Null profile lookup for " + args[1]);
                 return false;

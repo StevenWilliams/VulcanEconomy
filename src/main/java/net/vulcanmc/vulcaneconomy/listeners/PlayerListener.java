@@ -21,7 +21,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
         if(!Users.userExists(event.getUniqueId())) {
-            VulcanEconomy.plugin.getLogger().info(("Creating user: " + event.getName() + "/" + event.getUniqueId()));
+            VulcanEconomy.getPlugin().getLogger().info(("Creating user: " + event.getName() + "/" + event.getUniqueId()));
             Users.createUser(event.getUniqueId(), event.getName());
         } else {
 
@@ -30,7 +30,7 @@ public class PlayerListener implements Listener {
         //VulcanEconomy.plugin.getLogger().info("User exists");
         if(!user.hasAccount(new Currency()))
         {
-            VulcanEconomy.plugin.getLogger().info(("Creating account: " + event.getName() + "/" + event.getUniqueId()));
+            VulcanEconomy.getPlugin().getLogger().info(("Creating account: " + event.getName() + "/" + event.getUniqueId()));
             user.createAccount(new Currency());
         } else {
             //VulcanEconomy.plugin.getLogger().info("User has account");
@@ -48,11 +48,11 @@ public class PlayerListener implements Listener {
 
         //also remove other keys (account and balance)
         User user = Users.getUser(event.getPlayer().getUniqueId());
-        if(VulcanEconomy.plugin.accountcache.containsKey(user.getId())) {
-            VulcanEconomy.plugin.accountcache.remove(user.getId());
+        if(VulcanEconomy.getPlugin().getAccountcache().containsKey(user.getId())) {
+            VulcanEconomy.getPlugin().getAccountcache().remove(user.getId());
         }
-        if(VulcanEconomy.plugin.usercache.containsKey(event.getPlayer().getUniqueId())) {
-            VulcanEconomy.plugin.usercache.remove(event.getPlayer().getUniqueId());
+        if(VulcanEconomy.getPlugin().getUsercache().containsKey(event.getPlayer().getUniqueId())) {
+            VulcanEconomy.getPlugin().getUsercache().remove(event.getPlayer().getUniqueId());
         }
 
     }

@@ -27,13 +27,13 @@ public class User {
     public User(Integer playerid, UUID uuid) {
         this.playerid = playerid;
         this.uuid = uuid;
-        if(!VulcanEconomy.plugin.accountcache.containsKey(this.playerid)) {
+        if(!VulcanEconomy.getPlugin().getAccountcache().containsKey(this.playerid)) {
             //VulcanEconomy.plugin.getLogger().info("account cache does not contain key...");
             this.accountcache = new AccountCache(this);
-            VulcanEconomy.plugin.accountcache.put(this.playerid, this.accountcache);
+            VulcanEconomy.getPlugin().getAccountcache().put(this.playerid, this.accountcache);
         } else {
             //VulcanEconomy.plugin.getLogger().info("account cache does contain key...");
-            this.accountcache = VulcanEconomy.plugin.accountcache.get(this.playerid);
+            this.accountcache = VulcanEconomy.getPlugin().getAccountcache().get(this.playerid);
         }
     }
     public Account getAccount(Currency currency) {
@@ -41,19 +41,19 @@ public class User {
     }
     public Account createAccount(Currency currency) {
             try {
-                JsonNode response = Unirest.post(VulcanEconomy.apiURL + "accounts/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).queryString("accountOwner", playerid).queryString("server", VulcanEconomy.serverid).queryString("currency", new Currency().getNameSingle()).asJson().getBody();
+                JsonNode response = Unirest.post(VulcanEconomy.getApiURL() + "accounts/").basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).queryString("accountOwner", playerid).queryString("server", VulcanEconomy.getServerid()).queryString("currency", new Currency().getNameSingle()).asJson().getBody();
 
                 if (response.getObject().isNull("data")) {
-                    VulcanEconomy.plugin.accountcache.get(this.playerid).lookupHasAccount(new Currency());
-                    VulcanEconomy.plugin.getLogger().info(response.toString());
-                    return VulcanEconomy.plugin.accountcache.get(this.playerid).lookupGetAccount(new Currency());
+                    VulcanEconomy.getPlugin().getAccountcache().get(this.playerid).lookupHasAccount(new Currency());
+                    VulcanEconomy.getPlugin().getLogger().info(response.toString());
+                    return VulcanEconomy.getPlugin().getAccountcache().get(this.playerid).lookupGetAccount(new Currency());
 
                 }
                 JSONObject data = response.getObject().getJSONObject("data");
                     Long accountid = data.getLong("id");
-                     VulcanEconomy.plugin.getLogger().info("createdacccid: " + accountid);
+                     VulcanEconomy.getPlugin().getLogger().info("createdacccid: " + accountid);
                     Account account = new Account(accountid);
-                    VulcanEconomy.plugin.accountcache.get(this.playerid).setAccount(account);
+                    VulcanEconomy.getPlugin().getAccountcache().get(this.playerid).setAccount(account);
                     return account;
             } catch (UnirestException e) {
                 e.printStackTrace();
@@ -62,14 +62,14 @@ public class User {
         }
     public boolean hasAccount(Currency currency)
     {
-        if(!VulcanEconomy.plugin.accountcache.containsKey(this.playerid)) {
+        if(!VulcanEconomy.getPlugin().getAccountcache().containsKey(this.playerid)) {
             this.accountcache = new AccountCache(this);
-            VulcanEconomy.plugin.accountcache.put(this.playerid, this.accountcache);
+            VulcanEconomy.getPlugin().getAccountcache().put(this.playerid, this.accountcache);
             //VulcanEconomy.plugin.getLogger().info("account cache has does not contain key...");
             return this.accountcache.hasAccount(currency);
         } else {
             //VulcanEconomy.plugin.getLogger().info("account cache has does contain key...");
-            this.accountcache = VulcanEconomy.plugin.accountcache.get(this.playerid);
+            this.accountcache = VulcanEconomy.getPlugin().getAccountcache().get(this.playerid);
             return this.accountcache.hasAccount(currency);
         }
     }

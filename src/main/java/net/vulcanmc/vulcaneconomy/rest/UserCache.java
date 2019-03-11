@@ -44,7 +44,7 @@ public class UserCache {
     public boolean lookupUserExists() {
         JsonNode response = null;
         try {
-            response = Unirest.get(VulcanEconomy.apiURL + "players/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
+            response = Unirest.get(VulcanEconomy.getApiURL() + "players/").basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).asJson().getBody();
             JSONArray data = response.getObject().getJSONArray("data");
             if(data == null) {
                 return false;
@@ -88,7 +88,7 @@ public class UserCache {
         Integer playerid;
         //this.player = (Player) player;
         try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "players/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
+            JsonNode response = Unirest.get(VulcanEconomy.getApiURL() + "players/").basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).asJson().getBody();
             JSONArray data = response.getObject().getJSONArray("data");
 
 

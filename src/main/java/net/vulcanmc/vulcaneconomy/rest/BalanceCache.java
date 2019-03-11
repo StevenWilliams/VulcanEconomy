@@ -49,7 +49,7 @@ public class BalanceCache {
     public Long lookupBalance() {
         Long balance = -1L;
         try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "accounts/" + this.accountid).basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
+            JsonNode response = Unirest.get(VulcanEconomy.getApiURL() + "accounts/" + this.accountid).basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).asJson().getBody();
 
             JSONObject data = response.getObject().getJSONObject("data");
                     balance = data.getLong("balance");

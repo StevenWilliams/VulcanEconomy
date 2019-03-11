@@ -48,7 +48,7 @@ public class AccountCache {
     public boolean lookupHasAccount(Currency currency) {
         JsonNode response = null;
         try {
-            response = Unirest.get(VulcanEconomy.apiURL + "accounts/").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
+            response = Unirest.get(VulcanEconomy.getApiURL() + "accounts/").basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).asJson().getBody();
             JSONArray data = response.getObject().getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject object = data.getJSONObject(i);
@@ -63,7 +63,7 @@ public class AccountCache {
                 }
             }
         } catch (UnirestException e) {
-            VulcanEconomy.plugin.getLogger().info(e.getMessage());
+            VulcanEconomy.getPlugin().getLogger().info(e.getMessage());
         }
         this.hasAccount = false;
         return false;
@@ -78,7 +78,7 @@ public class AccountCache {
                 //VulcanEconomy.plugin.getLogger().info("using accountget cache");
                 return this.account;
             } else {
-                VulcanEconomy.plugin.getLogger().info("accountget cache outdated!");
+                VulcanEconomy.getPlugin().getLogger().info("accountget cache outdated!");
                 return lookupGetAccount(currency);
             }
         }
@@ -86,7 +86,7 @@ public class AccountCache {
     public Account lookupGetAccount(Currency currency) {
         Long accountid = -1L;
         try {
-            JsonNode response =  Unirest.get(VulcanEconomy.apiURL + "players/" + playerid + "/accounts").basicAuth(VulcanEconomy.plugin.apiUser, VulcanEconomy.plugin.apiPass).asJson().getBody();
+            JsonNode response =  Unirest.get(VulcanEconomy.getApiURL() + "players/" + playerid + "/accounts").basicAuth(VulcanEconomy.getPlugin().getApiUser(), VulcanEconomy.getPlugin().getApiPass()).asJson().getBody();
             JSONArray data = response.getObject().getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject object = data.getJSONObject(i);

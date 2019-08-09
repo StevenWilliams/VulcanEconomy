@@ -18,7 +18,7 @@ public class Accounts {
         return null;
     }
     public static Account getAccount(Player player, Currency currency) {
-        return new Account(-1L);
+        return null;
     }
 
 }

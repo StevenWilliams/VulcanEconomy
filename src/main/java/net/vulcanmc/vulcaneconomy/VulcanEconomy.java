@@ -9,10 +9,7 @@ import com.sk89q.squirrelid.resolver.HttpRepositoryService;
 import com.sk89q.squirrelid.resolver.ProfileService;
 import net.vulcanmc.vulcaneconomy.commands.*;
 import net.vulcanmc.vulcaneconomy.listeners.PlayerListener;
-import net.vulcanmc.vulcaneconomy.rest.AccountCache;
-import net.vulcanmc.vulcaneconomy.rest.BalanceCache;
 import net.vulcanmc.vulcaneconomy.rest.RequestsQueue;
-import net.vulcanmc.vulcaneconomy.rest.UserCache;
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -33,9 +30,6 @@ public class VulcanEconomy extends JavaPlugin{
     private static String apiURL;
     private static Integer serverid;
     private static ProfileService resolver;
-    private ConcurrentHashMap<Long, BalanceCache> balancecache = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, AccountCache> accountcache = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<UUID, UserCache> usercache = new ConcurrentHashMap<>();
     private SQLiteCache cache;
     private String apiUser;
     private String apiPass;
@@ -161,17 +155,6 @@ public class VulcanEconomy extends JavaPlugin{
         //getServer().getServicesManager().unregister(net.milkbowl.vault.economy.Economy.class, net.milkbowl.vault.economy.plugins.Economy_Essentials.class);
     }
 
-    public ConcurrentHashMap<Long, BalanceCache> getBalancecache() {
-        return balancecache;
-    }
-
-    public ConcurrentHashMap<Integer, AccountCache> getAccountcache() {
-        return accountcache;
-    }
-
-    public ConcurrentHashMap<UUID, UserCache> getUsercache() {
-        return usercache;
-    }
 
     public SQLiteCache getCache() {
         return cache;

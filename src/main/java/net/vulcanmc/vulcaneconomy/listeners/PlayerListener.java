@@ -48,12 +48,13 @@ public class PlayerListener implements Listener {
 
         //also remove other keys (account and balance)
         User user = Users.getUser(event.getPlayer().getUniqueId());
-        if(VulcanEconomy.getPlugin().getAccountcache().containsKey(user.getId())) {
+
+     /*   if(VulcanEconomy.getPlugin().getAccountcache().containsKey(user.getId())) {
             VulcanEconomy.getPlugin().getAccountcache().remove(user.getId());
         }
         if(VulcanEconomy.getPlugin().getUsercache().containsKey(event.getPlayer().getUniqueId())) {
             VulcanEconomy.getPlugin().getUsercache().remove(event.getPlayer().getUniqueId());
-        }
+        }*/
 
     }
 }

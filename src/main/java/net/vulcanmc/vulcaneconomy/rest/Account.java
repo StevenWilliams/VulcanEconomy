@@ -6,57 +6,47 @@ import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 public class Account {
-    private long accountid;
-    public long getBalance() {
-        return VulcanEconomy.getPlugin().getBalancecache().get(this.accountid).getBalance();
+    private UUID id;
+    private User owner;
+    private Currency currency;
+    private BigDecimal value;
+
+    public BigDecimal getBalance() {
+        return value;
     }
-    public Account(Long accountid) {
-        this.accountid = accountid;
-        if(!VulcanEconomy.getPlugin().getBalancecache().containsKey(this.accountid)) {
-            VulcanEconomy.getPlugin().getBalancecache().put(this.accountid, new BalanceCache(this));
-        } else {
-           VulcanEconomy.getPlugin().getBalancecache().get(this.accountid);
-        }
+    public Account(UUID id, User owner, Currency currency, BigDecimal value) {
+        this.id = id;
+        this.owner = owner;
+        this.currency = currency;
+        this.value = value;
     }
+
     public User getOwner() {
-        /*
-        Integer userid = -1;
-        try {
-            JsonNode response = Unirest.get(VulcanEconomy.apiURL + "accounts/" + accountid).asJson().getBody();
-            JSONArray jsonArray = response.getArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                userid = object.getInt("account_owner");
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }
-        if(userid != -1) {
-            return new User(userid, );
-        }
-        return null;
-        */
-        return null;
+        return owner;
     }
 
     public Transaction createTransaction(String type, long amount, String description) {
         return createTransaction(type, amount, description, false);
     }
+
     //todo: insead of submitting a request for every transaction, group them and process them every 5 minutes (or 10 transactions, whichever comes first)
     public Transaction createTransaction(String type, Long amount, String description, boolean queue) {
         try {
             JSONObject obj = new JSONObject();
 
-            obj.put("account", this.accountid);
+            obj.put("account", this.id);
             obj.put("type", type);
             obj.put("description", description);
             obj.put("amount", amount);
-            Request request = new Request(VulcanEconomy.getApiURL() + "accounts/" + this.accountid + "/transactions", "PUT", obj);
+            Request request = new Request(VulcanEconomy.getApiURL() + "accounts/" + this.id + "/transactions", "PUT", obj);
 
             if(queue) {
-                VulcanEconomy.getPlugin().getBalancecache().remove(accountid);
-                VulcanEconomy.getPlugin().getQueue().addRequest(request);
+               // VulcanEconomy.getPlugin().getBalancecache().remove(id);
+                //VulcanEconomy.getPlugin().getQueue().addRequest(request);
             } else {
                 JsonNode response = request.execute().getBody();/*
                 JSONObject data = response.getObject().getJSONObject("data");
@@ -71,18 +61,20 @@ public class Account {
     public JSONArray getTransactions() {
         return null;
     }
+
     public boolean isActive() {
         return true;
     }
-    public Transaction withdraw(long amount) {
 
+    public Transaction withdraw(long amount) {
         return withdraw(amount, "No description");
     }
+
     public Transaction withdraw(long amount, String description) {
         if(has(amount)) {
-            Transaction transaction = createTransaction(Transaction.TransactionType.DEBIT.toString(), amount, description, true);
+            Transaction transaction = createTransaction(Transaction.TransactionType.CREDIT.toString(), amount, description, true);
             if(transaction != null) {
-                VulcanEconomy.getPlugin().getBalancecache().get(this.accountid).withdraw(amount);
+                value = value.subtract(BigDecimal.valueOf(amount));
                 return transaction;
             }
         }
@@ -104,21 +96,21 @@ public class Account {
         return deposit(amount, "No description");
     }
     public Transaction deposit(long amount, String description) {
-            Transaction transaction = createTransaction(Transaction.TransactionType.CREDIT.toString(), amount, description, true);
+            Transaction transaction = createTransaction(Transaction.TransactionType.DEBIT.toString(), amount, description, true);
             if(transaction != null) {
-                VulcanEconomy.getPlugin().getBalancecache().get(this.accountid).deposit(amount);
+                value = value.add(BigDecimal.valueOf(amount));
                 return transaction;
             }
         return null;
     }
 
     public boolean has(long amount) {
-        if(this.getBalance() >= amount ) {
+        if(this.getBalance().compareTo(BigDecimal.valueOf(amount)) >= 0) {
             return true;
         }
         return false;
     }
-    public Long getId() {
-        return this.accountid;
+    public UUID getId() {
+        return this.id;
     }
 }

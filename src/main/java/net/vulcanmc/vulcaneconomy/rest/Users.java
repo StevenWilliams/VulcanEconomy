@@ -1,8 +1,6 @@
 package net.vulcanmc.vulcaneconomy.rest;
 
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+
 import net.vulcanmc.vulcaneconomy.VulcanEconomy;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,6 +10,14 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 public class Users {
+    public static boolean userExists(UUID uuid) {
+        return true;
+    }
+
+    public static User getUser(UUID uuid) {
+        return null;
+    }
+    /*
     public static User getUser(OfflinePlayer player) {
         return getUser(player.getPlayer());
     }
@@ -72,5 +78,5 @@ public class Users {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 }

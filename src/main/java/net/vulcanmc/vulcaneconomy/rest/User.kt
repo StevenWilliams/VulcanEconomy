@@ -1,29 +1,24 @@
 package net.vulcanmc.vulcaneconomy.rest
 
-import com.mashape.unirest.http.JsonNode
-import com.mashape.unirest.http.Unirest
-import com.mashape.unirest.http.exceptions.UnirestException
+import kong.unirest.Unirest
 import net.vulcanmc.vulcaneconomy.VulcanEconomy
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
-import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.UUID
 
-class User(private val playerid: Int?, private val uuid: UUID) {
-    private val player: Player? = null
+class User(private val uuid: UUID) {
+    private val player: OfflinePlayer = Bukkit.getOfflinePlayer(uuid);
     private var account: Account? = null;
+    private var id : UUID? = null;
 
     val accounts: List<Account>?
         get() = Accounts.getAccountsByPlayer(player)
     val offlinePlayer: OfflinePlayer
         get() = Bukkit.getOfflinePlayer(this.uuid)
-    val id: Long?
-        get() = java.lang.Long.valueOf(this.playerid!!.toLong())
 
     init {
-
+        id = uuid;
     }
 
     fun getAccount(currency: Currency): Account? {
@@ -44,5 +39,9 @@ class User(private val playerid: Int?, private val uuid: UUID) {
 
     fun hasAccount(currency: Currency): Boolean {
         return (getAccount(currency) != null);
+    }
+
+    fun getID(): UUID? {
+        return this.id;
     }
 }

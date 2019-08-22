@@ -21,6 +21,7 @@ public class Economy implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)  {
+        /*
         if(args.length >= 3) {
             String subcommand = args[0];
             //target uuid
@@ -108,7 +109,7 @@ public class Economy implements CommandExecutor {
                         }
                     }
             }
-        }
+        }*/
         return false;
     }
 

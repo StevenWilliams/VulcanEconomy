@@ -1,39 +1,55 @@
 package net.vulcanmc.vulcaneconomy;
 
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+
 import com.sk89q.squirrelid.Profile;
 import com.sk89q.squirrelid.cache.SQLiteCache;
 import com.sk89q.squirrelid.resolver.HttpRepositoryService;
 import com.sk89q.squirrelid.resolver.ProfileService;
+import kong.unirest.Unirest;
 import net.vulcanmc.vulcaneconomy.commands.*;
 import net.vulcanmc.vulcaneconomy.listeners.PlayerListener;
-import net.vulcanmc.vulcaneconomy.rest.RequestsQueue;
+import net.vulcanmc.vulcaneconomy.rest.Accounts;
+import net.vulcanmc.vulcaneconomy.rest.Currencies;
+import net.vulcanmc.vulcaneconomy.rest.Currency;
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 //import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
 
 public class VulcanEconomy extends JavaPlugin{
     private static VulcanEconomy plugin;
     private static String apiURL;
-    private static Integer serverid;
+    private static UUID serverid;
     private static ProfileService resolver;
     private SQLiteCache cache;
     private String apiUser;
     private String apiPass;
-    private RequestsQueue queue;
+    //private RequestsQueue queue;
+    private Currencies currencies = new Currencies();
+    private Accounts accounts;// = new Accounts();
+
+
+    private static UUID serverID;
+
+//For use in MockBukkit
+    public VulcanEconomy()
+    {
+        super();
+    }
+
+    protected VulcanEconomy(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+    }
 
     public static VulcanEconomy getPlugin() {
         return plugin;
@@ -43,7 +59,7 @@ public class VulcanEconomy extends JavaPlugin{
         return apiURL;
     }
 
-    public static Integer getServerid() {
+    public static UUID getServerid() {
         return serverid;
     }
 
@@ -51,14 +67,17 @@ public class VulcanEconomy extends JavaPlugin{
         return resolver;
     }
 
-    public RequestsQueue getQueue() {
+ /*   public RequestsQueue getQueue() {
         return queue;
     }
+*/
+
 
     @Override
+
     public void onEnable() {
         plugin = this;
-        this.queue = new RequestsQueue();
+      //  this.queue = new RequestsQueue();
         this.saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         //remember to disable commands in essentials config.
@@ -67,8 +86,10 @@ public class VulcanEconomy extends JavaPlugin{
         this.getCommand("pay").setExecutor(new Pay(this));
         this.getCommand("economy").setExecutor(new Economy(this));
         this.getCommand("transactions").setExecutor(new Transactions(this));
+
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        this.serverid = this.getConfig().getInt("server-id");
+        String serverIDstr = this.getConfig().getString("server-id");
+        this.serverID = UUID.fromString(serverIDstr);
         this.apiURL = this.getConfig().getString("api-url");
         this.apiUser = this.getConfig().getString("api-username");
         this.apiPass = this.getConfig().getString("api-password");
@@ -80,12 +101,16 @@ public class VulcanEconomy extends JavaPlugin{
             //load(this);
         }
 
+accounts = new Accounts();
+
+
     }
     public UUID getUUIDIfExists(String playername) {
         if(Bukkit.getPlayer(playername) != null)
         {
             return Bukkit.getPlayer(playername).getUniqueId();
         }
+        /*
 
         Integer playerid;
         UUID uuid = null;
@@ -106,8 +131,9 @@ public class VulcanEconomy extends JavaPlugin{
             }
         } catch (UnirestException e) {
             e.printStackTrace();
-        }
-        return uuid;
+        }*/
+
+        return null;
     }
     public UUID getUUID(String playername) {
         if(Bukkit.getPlayer(playername) != null)
@@ -136,11 +162,8 @@ public class VulcanEconomy extends JavaPlugin{
     @Override
     public void onDisable() {
 
-        try {
-            Unirest.shutdown();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            Unirest.shutDown();
+
         plugin = null;
     }
 
@@ -166,5 +189,17 @@ public class VulcanEconomy extends JavaPlugin{
 
     public String getApiPass() {
         return apiPass;
+    }
+
+    public static UUID getServerID() {
+        return serverID;
+    }
+
+    public Accounts getAccounts() {
+        return accounts;
+    }
+
+    public Currencies getCurrencies() {
+        return currencies;
     }
 }

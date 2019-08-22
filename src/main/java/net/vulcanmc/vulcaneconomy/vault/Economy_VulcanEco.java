@@ -217,7 +217,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
         }
         Long roundedamount = Math.round(amount);
 
-        account.deposit(roundedamount, "VaultAPI deposit");
+     //   account.deposit(roundedamount, "VaultAPI deposit");
 
         return new EconomyResponse(roundedamount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -228,7 +228,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot withdraw negative funds");
         }
 
-        Account account = Users.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
+        Account account = null;//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
 
         if (account == null) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist");
@@ -237,7 +237,7 @@ public class Economy_VulcanEco  extends AbstractEconomy {
         Long roundedamount = Math.round(amount);
 
         if (account.has(roundedamount)) {
-            account.withdraw(roundedamount, "VaultAPI withdrawal");
+          //  account.withdraw(roundedamount, "VaultAPI withdrawal");
             return new EconomyResponse(amount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
         } else {
             return new EconomyResponse(0, account.getBalance(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds");

@@ -20,12 +20,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
-        if(!Users.userExists(event.getUniqueId())) {
-            VulcanEconomy.getPlugin().getLogger().info(("Creating user: " + event.getName() + "/" + event.getUniqueId()));
-            Users.createUser(event.getUniqueId(), event.getName());
-        } else {
-
-        }
         User user = Users.getUser(event.getUniqueId());
         //VulcanEconomy.plugin.getLogger().info("User exists");
         if(!user.hasAccount(new Currency()))

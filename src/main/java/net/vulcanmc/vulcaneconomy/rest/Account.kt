@@ -82,7 +82,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
     }
 
     @JvmOverloads
-    fun withdraw(amount: Long, description: String = "No description"): Transaction? {
+    fun withdraw(amount: Long, description: String = "No description"): Boolean {
         val time1 = System.currentTimeMillis()
         if (has(amount)) {
             val transaction = createTransaction(Transaction.TransactionType.CREDIT, currency, amount, description, null, true)
@@ -94,7 +94,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         }
         println("withdraw: " + System.currentTimeMillis().minus( time1))
         //todo: check null checks
-        return null
+        return true
     }
 
 

@@ -1,6 +1,7 @@
 package net.vulcanmc.vulcaneconomy.rest
 
 import com.github.kittinunf.fuel.core.awaitResponse
+import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.core.requests.CancellableRequest
 import com.github.kittinunf.fuel.coroutines.awaitResponse
 import com.github.kittinunf.fuel.httpGet
@@ -23,8 +24,8 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
 
     var balanceDecimal: BigDecimal? = null
         private set
-    val balance: Long
-        get() = balanceDecimal!!.toLong()
+   /* val balance: Long
+        get() = balanceDecimal!!.toLong()*/
     val transactions: JSONArray?
         get() = null
 
@@ -32,9 +33,11 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         get() = true
 
     init {
-        this.balanceDecimal = value
         if (value == null) {
-
+            this.balanceDecimal = BigDecimal(0);
+            this.updateBalanceAsync();
+        } else {
+            this.balanceDecimal = value
         }
     }
 
@@ -49,6 +52,8 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
     }
 
     fun transferTo(currency: Currency, account: Account, amount: Long, description: String, plugin: String){
+        balanceDecimal = balanceDecimal?.subtract(BigDecimal(amount))
+        account.balanceDecimal = account.balanceDecimal?.add(BigDecimal(amount))
         val transaction = Transaction(currency = currency, amount = amount, description = description, plugin = plugin, creditPlayer = this.owner, debitPlayer = account.owner)
         transaction.createRequest()
     }
@@ -78,6 +83,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
 
     @JvmOverloads
     fun withdraw(amount: Long, description: String = "No description"): Transaction? {
+        val time1 = System.currentTimeMillis()
         if (has(amount)) {
             val transaction = createTransaction(Transaction.TransactionType.CREDIT, currency, amount, description, null, true)
             if (transaction != null) {
@@ -86,6 +92,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
                 //transaction.execute()
             }
         }
+        println("withdraw: " + System.currentTimeMillis().minus( time1))
         //todo: check null checks
         return null
     }
@@ -114,8 +121,16 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         return this.balanceDecimal!!.compareTo(BigDecimal.valueOf(amount)) >= 0
     }
 
+    fun getBalance(): BigDecimal {
+        return getBalance(true);
+    }
     fun getBalance(useCache: Boolean = true) : BigDecimal {
+        println("getBalance : " + this.balanceDecimal)
+
         if (useCache) {
+            if(this.balanceDecimal!!.equals(BigDecimal(0))) {
+                updateBalance();
+            }
             return this!!.balanceDecimal!!;
         } else {
             updateBalance();
@@ -125,18 +140,20 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
 
     fun updateBalance() {
         updateBalanceAsync().join();
+        println("updateBalance: " + this.balanceDecimal)
     }
 
     fun updateBalanceAsync(): CancellableRequest {
-        var httpAsync =( VulcanEconomy.getApiURL() + "/player/${owner.getID()}/currency/${currency.id}").httpGet().responseJson() { request, response, result ->
+        var httpAsync =( VulcanEconomy.getApiURL() + "/player/${owner.getID()}/currency/${currency.id}").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson() { request, response, result ->
             //do something with response
-            println("test1");
+           // println("test1");
             result.fold({ d ->
-                println("test");
-                println(d.obj().toString(2));
+               // println("test");
+             //   println(d.obj().toString(2));
                 var response = d.obj();
                 val bigDecimal = response.getBigDecimal("value");
                 this.balanceDecimal = bigDecimal
+                println("updated $balanceDecimal");
                 //do something with data
             }, { err ->
                 println(err.message)

@@ -1,23 +1,26 @@
-package net.vulcanmc.vulcaneconomy.commands;
+package net.vulcanmc.vulcaneconomy.commands
 
-import org.bukkit.ChatColor;
-import net.vulcanmc.vulcaneconomy.VulcanEconomy;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import net.vulcanmc.vulcaneconomy.rest.Account
+import org.bukkit.ChatColor
+import net.vulcanmc.vulcaneconomy.VulcanEconomy
+import org.bukkit.Bukkit
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
+import kotlin.math.min
 
-public class BalanceTop implements CommandExecutor {
-    private final VulcanEconomy plugin;
+class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situations where you need it.
+    : CommandExecutor {
 
-    public BalanceTop(VulcanEconomy plugin) {
-        this.plugin = plugin; // Store the plugin in situations where you need it.
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        sender.sendMessage(ChatColor.GOLD + "Balance Top");
-        sender.sendMessage(ChatColor.AQUA + "1. puppy3276, $5000");
-        sender.sendMessage(ChatColor.AQUA + "2. That1Guy2, $3000");
-        return true;
+    override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+        sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top")
+        var top = plugin.accounts.getTop(plugin.currencies.defaultCurrency)
+        top.subList(0, min(10, top.size))
+        var i : Int = 0;
+        for (acc in top) {
+            sender.sendMessage(ChatColor.AQUA.toString() + "$i. ${Bukkit.getOfflinePlayer(acc.owner.getID()).name}, $${acc.getBalance().toLong()}")
+            i++;
+        }
+        return true
     }
 }

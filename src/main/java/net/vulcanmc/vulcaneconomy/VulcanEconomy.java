@@ -13,6 +13,7 @@ import net.vulcanmc.vulcaneconomy.rest.Currencies;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.ServicePriority;
@@ -21,6 +22,9 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 //import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
@@ -30,6 +34,9 @@ public class VulcanEconomy extends JavaPlugin{
     private static String apiURL;
     private static UUID serverid;
     private static ProfileService resolver;
+    private static String password;
+    private static String username;
+
     private SQLiteCache cache;
     private String apiUser;
     private String apiPass;
@@ -62,6 +69,12 @@ public class VulcanEconomy extends JavaPlugin{
     public static UUID getServerid() {
         return serverid;
     }
+    public static String getUsername() {
+        return username;
+    }
+    public static String getPassword() {
+        return password;
+    }
 
     public static ProfileService getResolver() {
         return resolver;
@@ -77,6 +90,7 @@ public class VulcanEconomy extends JavaPlugin{
 
     public void onEnable() {
         plugin = this;
+
       //  this.queue = new RequestsQueue();
         this.saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -93,6 +107,8 @@ public class VulcanEconomy extends JavaPlugin{
         this.apiURL = this.getConfig().getString("api-url");
         this.apiUser = this.getConfig().getString("api-username");
         this.apiPass = this.getConfig().getString("api-password");
+        username = apiUser;
+        password = apiPass;
         setupVault();
         this.resolver = HttpRepositoryService.forMinecraft();
         File file = new File("uuidcache.sqlite");
@@ -161,8 +177,10 @@ accounts = new Accounts();
     }
     @Override
     public void onDisable() {
-
-            Unirest.shutDown();
+        for(Player player : getServer().getOnlinePlayers()){
+            accounts.removeAccountsFromCache(player.getUniqueId());
+        }
+        Unirest.shutDown();
 
         plugin = null;
     }

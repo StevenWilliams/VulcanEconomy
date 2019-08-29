@@ -1,5 +1,6 @@
 package net.vulcanmc.vulcaneconomy.rest
 
+import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.gson.jsonBody
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.json.responseJson
@@ -35,7 +36,7 @@ class Transaction(val uuid : UUID? = null, val amount : Long, val creditPlayer :
         obj.put("currency", currency.id.toString())
 
         println(obj);
-        val responseJson = (url + "currency/${currency.id}/transactions").httpPost().body(obj.toString()).header("Content-Type", "application/json").header("Accept", "application/json").responseJson() { request, response, result ->
+        val responseJson = (url + "currency/${currency.id}/transactions").httpPost().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).body(obj.toString()).header("Content-Type", "application/json").header("Accept", "application/json").responseJson() { request, response, result ->
             //do something with response
             println("test1");
             result.fold({ d ->
@@ -84,13 +85,13 @@ class Transaction(val uuid : UUID? = null, val amount : Long, val creditPlayer :
     fun revertBalance() {
         if(debitPlayer!= null) {
            var debitAccount = VulcanEconomy.getPlugin().accounts.getAccount(player = debitPlayer!!.offlinePlayer, currency = currency);
-            debitAccount.balanceDecimal!!.add(amount.toBigDecimal());
-            debitAccount.getBalance(false);
+            debitAccount!!.balanceDecimal!!.add(amount.toBigDecimal());
+            debitAccount!!.getBalance(false);
         }
         else {
             var creditAccount = VulcanEconomy.getPlugin().accounts.getAccount(player = creditPlayer!!.offlinePlayer, currency = currency);
-            creditAccount.balanceDecimal!!.add(amount.toBigDecimal());
-            creditAccount.getBalance(false);
+            creditAccount!!.balanceDecimal!!.add(amount.toBigDecimal());
+            creditAccount!!.getBalance(false);
 
         }
 

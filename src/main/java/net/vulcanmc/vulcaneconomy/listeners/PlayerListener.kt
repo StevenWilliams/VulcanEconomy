@@ -1,54 +1,39 @@
-package net.vulcanmc.vulcaneconomy.listeners;
+package net.vulcanmc.vulcaneconomy.listeners
 
-import net.vulcanmc.vulcaneconomy.VulcanEconomy;
-import net.vulcanmc.vulcaneconomy.rest.Currency;
-import net.vulcanmc.vulcaneconomy.rest.User;
-import net.vulcanmc.vulcaneconomy.rest.Users;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import net.vulcanmc.vulcaneconomy.VulcanEconomy
+import net.vulcanmc.vulcaneconomy.rest.*
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
-public class PlayerListener implements Listener {
-    private final VulcanEconomy plugin;
+class PlayerListener(private val plugin: VulcanEconomy) : Listener {
 
-    public PlayerListener(VulcanEconomy plugin) {
-        this.plugin = plugin;
+    @EventHandler
+    fun onPlayerLogin(event: AsyncPlayerPreLoginEvent) {
+        println("playerLogin VulcanEco")
+
+        val user = User(event.uniqueId)
+        val acc = user.getAccount(plugin.currencies.defaultCurrency)
     }
 
     @EventHandler
-    public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
-        User user = Users.getUser(event.getUniqueId());
-        //VulcanEconomy.plugin.getLogger().info("User exists");
-        if(!user.hasAccount(new Currency()))
-        {
-            VulcanEconomy.getPlugin().getLogger().info(("Creating account: " + event.getName() + "/" + event.getUniqueId()));
-            user.createAccount(new Currency());
-        } else {
-            //VulcanEconomy.plugin.getLogger().info("User has account");
-        }
-
-    }
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        println("playerJoin VulcanEco")
+        val player = event.player
+        val user = User(player.uniqueId)
+        val acc = user.getAccount(plugin.currencies.defaultCurrency)
+        acc!!.updateBalance()
         //send balance on join?
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        println("playerquit VulcanEco")
 
-        //also remove other keys (account and balance)
-        User user = Users.getUser(event.getPlayer().getUniqueId());
-
-     /*   if(VulcanEconomy.getPlugin().getAccountcache().containsKey(user.getId())) {
-            VulcanEconomy.getPlugin().getAccountcache().remove(user.getId());
-        }
-        if(VulcanEconomy.getPlugin().getUsercache().containsKey(event.getPlayer().getUniqueId())) {
-            VulcanEconomy.getPlugin().getUsercache().remove(event.getPlayer().getUniqueId());
-        }*/
-
+        plugin.accounts.removeAccountsFromCache(event.player.uniqueId)
     }
+
 }

@@ -23,12 +23,15 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
             val amount = java.lang.Long.valueOf(args[1])
             if (sender is Player) {
                 val user = plugin.accounts.getAccount(sender.uniqueId, plugin.currencies.defaultCurrency)
-                user.transferTo(plugin.currencies.defaultCurrency, target, amount, "Transfer", "VulcanEconomy")
+                user!!.transferTo(plugin.currencies.defaultCurrency, target!!, amount, "Transfer", "VulcanEconomy")
+                sender.sendMessage("Payment sent. Your balance is now: ${user.getBalance()}.");
             } else if (sender is ConsoleCommandSender) {
                 //is console
-                target.deposit(amount, "Console deposit /pay")
+                target!!.deposit(amount, "Console deposit /pay")
             }
+            return true;
+
         }
-        return true;
+    return false;
     }
 }

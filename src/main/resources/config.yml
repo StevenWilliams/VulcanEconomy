@@ -1,6 +1,6 @@
 server-id: "fe919d5b-4148-414b-861e-9f40ff2699f0"
-api-username: prison
-api-password: prisonpass1234RV7$e
+api-username: "test1"
+api-password: "ngkgu4JPeg0ZNDIqBk9MPjpwi0OcfrNUCm5vUePo"
 api-url: "http://localhost:8000/"
 default: "default"
 currencies:

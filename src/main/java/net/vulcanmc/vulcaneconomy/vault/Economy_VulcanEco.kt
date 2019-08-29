@@ -1,326 +1,288 @@
-package net.vulcanmc.vulcaneconomy.vault;
+package net.vulcanmc.vulcaneconomy.vault
 
-import net.milkbowl.vault.economy.AbstractEconomy;
-import net.milkbowl.vault.economy.EconomyResponse;
-import net.vulcanmc.vulcaneconomy.VulcanEconomy;
-import net.vulcanmc.vulcaneconomy.rest.Account;
-import net.vulcanmc.vulcaneconomy.rest.Currency;
-import net.vulcanmc.vulcaneconomy.rest.User;
-import net.vulcanmc.vulcaneconomy.rest.Users;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.Plugin;
+import net.milkbowl.vault.economy.AbstractEconomy
+import net.milkbowl.vault.economy.EconomyResponse
+import net.vulcanmc.vulcaneconomy.VulcanEconomy
+import net.vulcanmc.vulcaneconomy.rest.Account
+import net.vulcanmc.vulcaneconomy.rest.Currency
+import net.vulcanmc.vulcaneconomy.rest.User
+import net.vulcanmc.vulcaneconomy.rest.Users
+import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.server.PluginDisableEvent
+import org.bukkit.event.server.PluginEnableEvent
+import org.bukkit.plugin.Plugin
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.ArrayList
+import java.util.logging.Logger
 
-public class Economy_VulcanEco  extends AbstractEconomy {
+class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
+    private val name = "VulcanEconomy"
+    private var vulcaneco: VulcanEconomy? = VulcanEconomy.getPlugin()
+    private var plugin : Plugin = VulcanEconomy.getPlugin()
+    private var currency = VulcanEconomy.getPlugin().currencies.defaultCurrency
 
-    private static final Logger log = Logger.getLogger("Minecraft");
-    private final String name = "VulcanEconomy";
-    private VulcanEconomy vulcaneco = null;
-    private Plugin plugin = null;
-    private Currency currency = null;
-
-    public Economy_VulcanEco(Plugin plugin) {
-        this.plugin = plugin;
-        Bukkit.getServer().getPluginManager().registerEvents(new EconomyServerListener(this), plugin);
+    init {
+        this.plugin = plugin
+        Bukkit.getServer().pluginManager.registerEvents(EconomyServerListener(this), plugin)
 
         // Load Plugin in case it was loaded before
         if (vulcaneco == null) {
-            Plugin essentials = plugin.getServer().getPluginManager().getPlugin("VulcanEconomy");
-            if (essentials != null && essentials.isEnabled()) {
-                vulcaneco = (VulcanEconomy) essentials;
-                log.info(String.format("[%s][Economy] %s hooked.", plugin.getDescription().getName(), name));
+            val essentials = plugin.server.pluginManager.getPlugin("VulcanEconomy")
+            if (essentials != null && essentials.isEnabled) {
+                vulcaneco = essentials as VulcanEconomy
+                log.info(String.format("[%s][Economy] %s hooked.", plugin.description.name, name))
             }
         }
         //add dynamic currencies later
-        currency = new Currency();
+        currency = Currency()
     }
 
-    @Override
-    public boolean isEnabled() {
-        if (vulcaneco == null) {
-            return false;
+    override fun isEnabled(): Boolean {
+        return if (vulcaneco == null) {
+            false
         } else {
-            return vulcaneco.isEnabled();
+            vulcaneco!!.isEnabled
         }
     }
 
-    @Override
-    public String getName() {
-        return name;
+    override fun getName(): String {
+        return name
     }
 
-    @Override
-    public boolean hasBankSupport() {
-        return false;
+    override fun hasBankSupport(): Boolean {
+        return false
     }
 
-    @Override
-    public int fractionalDigits() {
-        return 0;
+    override fun fractionalDigits(): Int {
+        return 0
     }
 
-//continue here
-    @Override
-    public String format(double v) {
-        return null;
+    //continue here
+    override fun format(v: Double): String? {
+        return null
     }
 
-    @Override
-    public String currencyNamePlural() {
-        return currency.getNamePlural();
+    override fun currencyNamePlural(): String {
+        return currency.namePlural
     }
 
-    @Override
-    public String currencyNameSingular() {
-        return currency.getNameSingle();
+    override fun currencyNameSingular(): String {
+        return currency.nameSingle
     }
 
-    @Override
-    public boolean hasAccount(String playername) {
-        /*
-        try {
+    override fun hasAccount(playername: String): Boolean {
+        val time1 = System.currentTimeMillis()
 
-            UUID uuid = VulcanEconomy.plugin.getUUID(playername);
-            if (uuid == null) {
-                return true;
-                //prevent essentials from handling...
-            }
-            if (Users.userExists(profile.getUniqueId()) && Users.getUser(profile.getUniqueId()).hasAccount(new Currency())) {
-                   return true;
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //prevents essentials from handling
-        return true;
-        //return false;
+        val offlinePlayer = Bukkit.getOfflinePlayer(playername) ?: return false
+        val user = User(offlinePlayer.uniqueId)
+        val acc = user.getAccount(vulcaneco!!.currencies.defaultCurrency)
+        println("VaultHasAccount" + System.currentTimeMillis().minus(time1))
+
+        return acc != null
     }
 
-    @Override
-    public boolean hasAccount(String playername, String worldname) {
-        return hasAccount(playername);
+    override fun hasAccount(playername: String, worldname: String): Boolean {
+        return hasAccount(playername)
     }
 
-    @Override
-    public double getBalance(String playername) {
+    override fun getBalance(playername: String): Double {
+        val time1 = System.currentTimeMillis()
 
-            /*
-            Profile profile = VulcanEconomy.resolver.findByName(playername);
-            if (profile == null) {
-                if(Bukkit.getPlayer(playername) != null) {
-                    Player player = Bukkit.getPlayer(playername);
-                    return Users.getUser(player).getAccount(currency).getBalance();
-                } else {
-                    return Users.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency).getBalance();
-                }
-                //return -1;
-            }*/
-            User user = Users.getUser(VulcanEconomy.getPlugin().getUUID(playername));
-            if (user == null) {
-                return -1;
-            }
-            if (user.hasAccount(currency)) {
-                    return user.getAccount(currency).getBalance();
-            }
-        return -1;
-    }
-    @Override
-    public double getBalance(OfflinePlayer offlinePlayer, String worldName) {
-        return getBalance(offlinePlayer);
-    }
-    /*
-    @Override
-    public double getBalance(OfflinePlayer player) {
-        UUID uuid = player.getUniqueId();
-        if (Users.userExists(uuid) && Users.getUser(uuid).hasAccount(currency)) {
-            return Users.getUser(uuid).getAccount(currency).getBalance();
+        val user = User(Bukkit.getOfflinePlayer(playername).uniqueId)
+
+        if (user.getAccount(currency) != null) {
+            //plugin.getLogger().info("getAccount not null");
+            var value = user.getAccount(currency)!!.getBalance(true).toLong().toDouble()
+            println("GetBalanceVault" + System.currentTimeMillis().minus(time1))
+            return value
+        } else {
+            //plugin.getLogger().info("getAccount null");
         }
-        return -1;
-    }*/
-    @Override
-    public double getBalance(String playername, String worldname) {
-        return getBalance(playername);
+        return -1.0
     }
 
-    @Override
-    public boolean has(String playername, double amount) {
-        return getBalance(playername) >= amount;
+    override fun getBalance(offlinePlayer: OfflinePlayer, worldName: String): Double {
+        return getBalance(offlinePlayer)
     }
 
-    @Override
-    public boolean has(String playername, String worldname, double amount) {
-        return has(playername, amount);
+    override fun getBalance(playername: String, worldname: String): Double {
+        return getBalance(playername)
     }
 
-
-
-    @Override
-    public EconomyResponse withdrawPlayer(String playername, double amount) {
-        return withdraw(playername, amount);
+    override fun has(playername: String, amount: Double): Boolean {
+        return getBalance(playername) >= amount
     }
 
-    @Override
-    public EconomyResponse withdrawPlayer(String playername, String world, double amount) {
-        return withdraw(playername, amount);
+    override fun has(playername: String, worldname: String, amount: Double): Boolean {
+        return has(playername, amount)
     }
 
 
-
-    @Override
-    public EconomyResponse depositPlayer(String playername, double amount) {
-        return deposit(playername, amount);
+    override fun withdrawPlayer(playername: String, amount: Double): EconomyResponse {
+        return withdraw(playername, amount)
     }
 
-    @Override
-    public EconomyResponse depositPlayer(String playername, String world, double amount) {
-        return deposit(playername, amount);
+    override fun withdrawPlayer(playername: String, world: String, amount: Double): EconomyResponse {
+        return withdraw(playername, amount)
     }
 
 
-    @Override
-    public boolean createPlayerAccount(String playername) {
-        if(!Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).hasAccount(new Currency())) {
-            if (Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).createAccount(new Currency()) != null){
-                return true;
-              }
+    override fun depositPlayer(playername: String, amount: Double): EconomyResponse {
+        return deposit(playername, amount)
+    }
+
+    override fun depositPlayer(playername: String, world: String, amount: Double): EconomyResponse {
+        return deposit(playername, amount)
+    }
+
+
+    override fun createPlayerAccount(playername: String): Boolean {
+        val time1 = System.currentTimeMillis()
+        val user = User(Bukkit.getOfflinePlayer(playername).uniqueId)
+        val account = user.getAccount(currency)//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
+        if (account != null) {
+            account.updateBalanceAsync()
+            println("VaultCreatePlayerAccount" + System.currentTimeMillis().minus(time1))
+
+            return true
+        } else {
+            return false
         }
-        return false;
     }
 
-    @Override
-    public boolean createPlayerAccount(String playername, String world) {
-        return createPlayerAccount(playername);
+    override fun createPlayerAccount(playername: String, world: String): Boolean {
+        return createPlayerAccount(playername)
     }
 
 
+    private fun deposit(playername: String, amount: Double): EconomyResponse {
+        val time1 = System.currentTimeMillis()
+        val user = User(Bukkit.getOfflinePlayer(playername).uniqueId)
+        val account = user.getAccount(currency)
+                ?: return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist")//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
 
-    private EconomyResponse deposit(String playername, double amount) {
+        val roundedamount = Math.round(amount)
+
+        account.deposit(roundedamount, "VaultAPI deposit")
+        val balance = account.getBalance(true).toLong().toDouble()
+        println("VaultDeposit" + System.currentTimeMillis().minus(time1))
+
+        return EconomyResponse(roundedamount.toDouble(), balance, EconomyResponse.ResponseType.SUCCESS, "")
+    }
+
+
+    private fun withdraw(playername: String, amount: Double): EconomyResponse {
+        println("vaultapi withdraw1")
+        val time1 = System.currentTimeMillis()
+
         if (amount < 0) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
+            println("vaultapi withdraw2")
+
+            return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "Cannot withdraw negative funds")
         }
+        println("vaultapi withdraw3")
 
-        Account account = Users.getUser(VulcanEconomy.getPlugin().getUUID(playername)).getAccount(currency);
+        val user = User(Bukkit.getOfflinePlayer(playername).uniqueId)
+        val account = user.getAccount(currency)
+                ?: return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist")//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
+        println("vaultapi withdraw4")
 
-        if (account == null) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist");
-        }
-        Long roundedamount = Math.round(amount);
+        val roundedamount = Math.round(amount)
 
-     //   account.deposit(roundedamount, "VaultAPI deposit");
-
-        return new EconomyResponse(roundedamount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
-    }
-
-
-    private EconomyResponse withdraw(String playername, double amount) {
-        if (amount < 0) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot withdraw negative funds");
-        }
-
-        Account account = null;//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
-
-        if (account == null) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist");
-        }
-
-        Long roundedamount = Math.round(amount);
+        println("vaultapi withdraw5 $roundedamount")
 
         if (account.has(roundedamount)) {
-          //  account.withdraw(roundedamount, "VaultAPI withdrawal");
-            return new EconomyResponse(amount, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "");
+            println("vaultapi withdraw6")
+
+            account.withdraw(roundedamount, "VaultAPI withdrawal")
+            val balance = account.getBalance(false).toLong().toDouble()
+            println("VaultWithdrawSuccess" + System.currentTimeMillis().minus(time1))
+
+            return EconomyResponse(amount, balance , EconomyResponse.ResponseType.SUCCESS, "")
         } else {
-            return new EconomyResponse(0, account.getBalance(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds");
+            println("vaultapi withdraw7")
+
+            println("VaultWithdrawfail" + System.currentTimeMillis().minus(time1))
+            return EconomyResponse(0.0, account.getBalance(false).toLong().toDouble(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds")
         }
     }
 
     //Ignore
-    @Override
-    public EconomyResponse createBank(String s, String s2) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun createBank(playername: String, world: String): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse deleteBank(String s) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun deleteBank(playername: String): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse bankBalance(String s) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun bankBalance(playername: String): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse bankHas(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun bankHas(playername: String, amount: Double): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse bankWithdraw(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun bankWithdraw(playername: String, amount: Double): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse bankDeposit(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun bankDeposit(playername: String, amount: Double): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse isBankOwner(String s, String s2) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun isBankOwner(player: String, worldName: String): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public EconomyResponse isBankMember(String s, String s2) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!");
+    override fun isBankMember(player: String, worldName: String): EconomyResponse {
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "VulcanEconomy does not support bank accounts!")
     }
 
-    @Override
-    public List<String> getBanks() {
-        return new ArrayList<String>();
+    override fun getBanks(): List<String> {
+        return ArrayList()
     }
-//upto here
+    //upto here
 
 
+    inner class EconomyServerListener(economy: Economy_VulcanEco) : Listener {
+        internal var economy: Economy_VulcanEco? = null
 
-    public class EconomyServerListener implements Listener {
-        Economy_VulcanEco economy = null;
-
-        public EconomyServerListener(Economy_VulcanEco economy) {
-            this.economy = economy;
+        init {
+            this.economy = economy
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onPluginEnable(PluginEnableEvent event) {
-            if (economy.vulcaneco == null) {
-                Plugin vulcanecoplugin = event.getPlugin();
+        fun onPluginEnable(event: PluginEnableEvent) {
+            if (economy!!.vulcaneco == null) {
+                val vulcanecoplugin = event.plugin
 
-                if (vulcanecoplugin.getDescription().getName().equals("VulcanEconomy")) {
-                    economy.vulcaneco = (VulcanEconomy) vulcanecoplugin;
-                    log.info(String.format("[%s][Economy] %s hooked.", plugin.getDescription().getName(), economy.name));
+                if (vulcanecoplugin.description.name == "VulcanEconomy") {
+                    economy!!.vulcaneco = vulcanecoplugin as VulcanEconomy
+                    log.info(String.format("[%s][Economy] %s hooked.", plugin.description.name, economy!!.name))
                 }
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onPluginDisable(PluginDisableEvent event) {
-            if (economy.vulcaneco != null) {
-                if (event.getPlugin().getDescription().getName().equals("VulcanEconomy")) {
-                    economy.vulcaneco = null;
-                    log.info(String.format("[%s][Economy] %s unhooked.", plugin.getDescription().getName(), economy.name));
+        fun onPluginDisable(event: PluginDisableEvent) {
+            if (economy!!.vulcaneco != null) {
+                if (event.plugin.description.name == "VulcanEconomy") {
+                    economy!!.vulcaneco = null
+                    log.info(String.format("[%s][Economy] %s unhooked.", plugin.description.name, economy!!.name))
                 }
             }
         }
+    }
+
+    companion object {
+
+        private val log = VulcanEconomy.getPlugin().logger
     }
 
 }

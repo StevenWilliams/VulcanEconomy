@@ -6,7 +6,7 @@
 
     <groupId>net.vulcanmc</groupId>
     <artifactId>vulcaneconomy</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>VulcanEconomy</name>
     <description>A Mysql, transaction-oriented economy system</description>
@@ -36,13 +36,14 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.14.2-R0.1-SNAPSHOT</version>
+            <version>1.13-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
+            <version>1.7</version>
         </dependency>
+
         <dependency>
             <groupId>com.konghq</groupId>
             <artifactId>unirest-java</artifactId>
@@ -105,6 +106,11 @@
             <artifactId>fuel-coroutines</artifactId>
             <version>2.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.kittinunf.result</groupId>
+            <artifactId>result</artifactId>
+            <version>2.2.0</version>
+        </dependency>
 
     </dependencies>
     <build>
@@ -139,6 +145,12 @@
                                 <include>**</include>
                             </includes>
                         </filter>
+                        <filter>
+                            <artifact>com.github.kittinunf.result</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </filter>
                     </filters>
                     <finalName>uber-${project.artifactId}-${project.version}</finalName>
                     <relocations>
@@ -149,6 +161,10 @@
                         <relocation>
                             <pattern>com.github.kittinunf.fuel</pattern>
                             <shadedPattern>net.vulcanmc.vulcaneconomy.util.fuel</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.kittinunf.result</pattern>
+                            <shadedPattern>net.vulcanmc.vulcaneconomy.util.result</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -183,28 +199,35 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <executions>
+                    <!-- Replacing default-compile as it is treated specially by maven -->
                     <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Replacing default-testCompile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
                     </execution>
                     <execution>
-                        <id>testCompile</id>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals> <goal>compile</goal> </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
                         <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
+                        <goals> <goal>testCompile</goal> </goals>
                     </execution>
                 </executions>
-                <configuration>
+<configuration>
                     <source>8</source>
                     <target>8</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+
         </plugins>
         <resources>
             <resource>

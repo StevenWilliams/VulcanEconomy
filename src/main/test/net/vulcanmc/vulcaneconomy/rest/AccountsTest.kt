@@ -6,6 +6,7 @@ import org.junit.Test
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
+import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock
 import be.seeseemelk.mockbukkit.entity.PlayerMock
 import net.vulcanmc.vulcaneconomy.VulcanEconomy
 import java.util.concurrent.CountDownLatch
@@ -43,5 +44,16 @@ class AccountsTest {
 
         lock.await(4000, TimeUnit.MILLISECONDS);
         println(updateBalanceAsync.get().body());
+    }
+
+    @Test
+    fun getTop() {
+        val top = plugin!!.accounts.getTop(plugin!!.currencies.defaultCurrency);
+
+    }
+    @Test
+    fun ecoSetCommand() {
+
+        ConsoleCommandSenderMock()
     }
 }

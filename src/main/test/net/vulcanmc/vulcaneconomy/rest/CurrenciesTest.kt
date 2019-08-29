@@ -40,6 +40,7 @@ class CurrenciesTest {
         assertEquals("Dollars", defaultCurrency.name)
     }
 
+
     @Test
     fun getCurrencies() {
     }

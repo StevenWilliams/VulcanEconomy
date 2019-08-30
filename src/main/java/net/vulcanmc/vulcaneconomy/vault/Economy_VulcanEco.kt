@@ -80,7 +80,7 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
         val offlinePlayer = Bukkit.getOfflinePlayer(playername) ?: return false
         val user = User(offlinePlayer.uniqueId)
         val acc = user.getAccount(vulcaneco!!.currencies.defaultCurrency)
-        println("VaultHasAccount" + System.currentTimeMillis().minus(time1))
+      //  println("VaultHasAccount" + System.currentTimeMillis().minus(time1))
 
         return acc != null
     }
@@ -97,7 +97,7 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
         if (user.getAccount(currency) != null) {
             //plugin.getLogger().info("getAccount not null");
             var value = user.getAccount(currency)!!.getBalance(true).toLong().toDouble()
-            println("GetBalanceVault" + System.currentTimeMillis().minus(time1))
+         //   println("GetBalanceVault" + System.currentTimeMillis().minus(time1))
             return value
         } else {
             //plugin.getLogger().info("getAccount null");
@@ -176,35 +176,35 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
 
 
     private fun withdraw(playername: String, amount: Double): EconomyResponse {
-        println("vaultapi withdraw1")
+      //  println("vaultapi withdraw1")
         val time1 = System.currentTimeMillis()
 
         if (amount < 0) {
-            println("vaultapi withdraw2")
+        //    println("vaultapi withdraw2")
 
             return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "Cannot withdraw negative funds")
         }
-        println("vaultapi withdraw3")
+        //println("vaultapi withdraw3")
 
         val user = User(Bukkit.getOfflinePlayer(playername).uniqueId)
         val account = user.getAccount(currency)
                 ?: return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "Account doesn't exist")//.getUser(Bukkit.getOfflinePlayer(playername)).getAccount(currency);
-        println("vaultapi withdraw4")
+        //println("vaultapi withdraw4")
 
         val roundedamount = Math.round(amount)
 
-        println("vaultapi withdraw5 $roundedamount")
+        //println("vaultapi withdraw5 $roundedamount")
 
         if (account.has(roundedamount)) {
-            println("vaultapi withdraw6")
+          //  println("vaultapi withdraw6")
 
-            account.withdraw(roundedamount, "VaultAPI withdrawal")
+            //account.withdraw(roundedamount, "VaultAPI withdrawal")
             val balance = account.getBalance(false).toLong().toDouble()
             println("VaultWithdrawSuccess" + System.currentTimeMillis().minus(time1))
 
             return EconomyResponse(amount, balance , EconomyResponse.ResponseType.SUCCESS, "")
         } else {
-            println("vaultapi withdraw7")
+            //println("vaultapi withdraw7")
 
             println("VaultWithdrawfail" + System.currentTimeMillis().minus(time1))
             return EconomyResponse(0.0, account.getBalance(false).toLong().toDouble(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds")

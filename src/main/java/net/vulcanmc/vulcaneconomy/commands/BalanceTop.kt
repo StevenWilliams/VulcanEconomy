@@ -1,5 +1,6 @@
 package net.vulcanmc.vulcaneconomy.commands
 
+import net.vulcanmc.vulcaneconomy.UUIDConverter
 import net.vulcanmc.vulcaneconomy.rest.Account
 import org.bukkit.ChatColor
 import net.vulcanmc.vulcaneconomy.VulcanEconomy
@@ -15,10 +16,15 @@ class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situat
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
         sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top")
         var top = plugin.accounts.getTop(plugin.currencies.defaultCurrency)
-        top.subList(0, min(10, top.size))
-        var i : Int = 0;
+        top = top.subList(0, min(15, top.size))
+        var i : Int = 1;
         for (acc in top) {
-            sender.sendMessage(ChatColor.AQUA.toString() + "$i. ${Bukkit.getOfflinePlayer(acc.owner.getID()).name}, $${acc.getBalance().toLong()}")
+            try {
+                sender.sendMessage(org.bukkit.ChatColor.AQUA.toString() + "$i. ${net.vulcanmc.vulcaneconomy.UUIDConverter.getNameFromUUID(acc.owner.getID()!!)}, $${acc.getBalance().toLong()}")
+
+            } catch (e:Exception) {
+
+            }
             i++;
         }
         return true

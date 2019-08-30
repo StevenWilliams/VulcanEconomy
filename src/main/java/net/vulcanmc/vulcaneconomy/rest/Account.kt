@@ -81,11 +81,12 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         return null
     }
 
+
     @JvmOverloads
-    fun withdraw(amount: Long, description: String = "No description"): Boolean {
+    fun withdraw(amount: Long, description: String = "No description", plugin : String = ""): Boolean {
         val time1 = System.currentTimeMillis()
         if (has(amount)) {
-            val transaction = createTransaction(Transaction.TransactionType.CREDIT, currency, amount, description, null, true)
+            val transaction = createTransaction(Transaction.TransactionType.CREDIT, currency, amount, description, plugin, true)
             if (transaction != null) {
                 balanceDecimal = balanceDecimal!!.subtract(BigDecimal.valueOf(amount))
                 transaction.createRequest();
@@ -105,10 +106,13 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
     }
 
 
+    fun deposit(amount:Long, description:String) : Boolean {
+        return deposit(amount, description, "")
+    }
 
-    @JvmOverloads
-    fun deposit(amount: Long, description: String = "No description"): Boolean {
-        val transaction = createTransaction(Transaction.TransactionType.DEBIT, currency, amount, description, null, true)
+
+    fun deposit(amount: Long, description: String = "No description", plugin : String = ""): Boolean {
+        val transaction = createTransaction(Transaction.TransactionType.DEBIT, currency, amount, description, plugin, true)
         if (transaction != null) {
             balanceDecimal = balanceDecimal!!.add(BigDecimal.valueOf(amount))
             transaction.createRequest();
@@ -125,7 +129,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         return getBalance(true);
     }
     fun getBalance(useCache: Boolean = true) : BigDecimal {
-        println("getBalance : " + this.balanceDecimal)
+     //   println("getBalance : " + this.balanceDecimal)
 
         if (useCache) {
             if(this.balanceDecimal!!.equals(BigDecimal(0))) {
@@ -140,7 +144,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
 
     fun updateBalance() {
         updateBalanceAsync().join();
-        println("updateBalance: " + this.balanceDecimal)
+        //println("updateBalance: " + this.balanceDecimal)
     }
 
     fun updateBalanceAsync(): CancellableRequest {
@@ -153,7 +157,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
                 var response = d.obj();
                 val bigDecimal = response.getBigDecimal("value");
                 this.balanceDecimal = bigDecimal
-                println("updated $balanceDecimal");
+              //  println("updated $balanceDecimal");
                 //do something with data
             }, { err ->
                 println(err.message)

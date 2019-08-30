@@ -70,23 +70,26 @@ class Accounts {
         }
     }
     fun removeAccountFromCache(playerID: UUID, currency : Currency) {
-        val acc: Account? = cacheMap.get("${playerID}.${currency.id}");
-        getCache().set("${playerID}.${currency.id}.bal", acc!!.getBalance(true));
-        cacheMap.remove("${playerID}.${currency.id}")
-        saveCache();
+        if(cacheMap.containsKey("${playerID}.${currency.id}")) {
+            val acc: Account? = cacheMap.get("${playerID}.${currency.id}");
+            this.getCache().set("${playerID}.${currency.id}.bal", acc!!.getBalance(true));
+            cacheMap.remove("${playerID}.${currency.id}")
+            saveCache()
+        }
+;
     }
     fun getAccount(uniqueId : UUID, currency : Currency) : Account? {
         val time1 = System.currentTimeMillis();
 
         //use local cache
         if(cacheMap.containsKey("${uniqueId}.${currency.id}") && cacheMap.get("${uniqueId}.${currency.id}") != null) {
-            println("cacheMap")
+         //   println("cacheMap")
             return cacheMap["${uniqueId}.${currency.id}"]!!;
         }
         var user = User(uniqueId);
         var acc: Account? = null;
         if(getCache().contains("${uniqueId}.${currency.id}.id")) {
-            println("cache contains $uniqueId")
+  //          println("cache contains $uniqueId")
             var accID = UUID.fromString(getCache().getString("${uniqueId}.${currency.id}.id"));
             var bal = getCache().getLong("${uniqueId}.${currency.id}.bal", 0L);
             acc = Account(accID, user, currency);
@@ -115,18 +118,18 @@ class Accounts {
                     cacheMap.put("${uniqueId}.${currency.id}", acc)
                     getCache().set("${uniqueId}.${currency.id}.id", id.toString())
                     saveCache();
-                    println("getAccountHttp2" + time2.minus(System.currentTimeMillis()))
+                 //   println("getAccountHttp2" + time2.minus(System.currentTimeMillis()))
 
 
                 }
             }
-            println("getAccountHttp1" + time2.minus(System.currentTimeMillis()))
+//            println("getAccountHttp1" + time2.minus(System.currentTimeMillis()))
 
 
         }
-        println(time1)
-        println(System.currentTimeMillis())
-        println("getAccountTime" + time1.minus(System.currentTimeMillis()).toLong())
+      //  println(time1)
+    //    println(System.currentTimeMillis())
+  //      println("getAccountTime" + time1.minus(System.currentTimeMillis()).toLong())
 
         return acc
     }

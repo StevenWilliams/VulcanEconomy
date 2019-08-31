@@ -2,7 +2,9 @@ server-id: "fe919d5b-4148-414b-861e-9f40ff2699f0"
 api-username: "test1"
 api-password: "ngkgu4JPeg0ZNDIqBk9MPjpwi0OcfrNUCm5vUePo"
 api-url: "http://localhost:8000/"
+backup-api-url: "http://localhost:8000/"
 default: "default"
+prefix: '&4Lares &c>> '
 currencies:
   default:
     name: "Dollars"

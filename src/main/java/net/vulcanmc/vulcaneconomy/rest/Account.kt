@@ -1,24 +1,20 @@
 package net.vulcanmc.vulcaneconomy.rest
 
-import com.github.kittinunf.fuel.core.awaitResponse
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.core.requests.CancellableRequest
-import com.github.kittinunf.fuel.coroutines.awaitResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
-
-import kotlinx.coroutines.delay
+import com.github.kittinunf.result.Result
 
 import net.vulcanmc.vulcaneconomy.VulcanEconomy
-import org.json.JSONArray
 import org.json.JSONObject
 
 import java.math.BigDecimal
 import java.util.UUID
 
 
-class Account(val id: UUID, val owner: User, val currency: Currency, value: BigDecimal? = null) {
-    constructor(id: UUID, owner: User, currency: Currency, value: Long) : this(id, owner, currency, BigDecimal.valueOf(value))
+class Account(val id: UUID, val owner: User?, val currency: Currency, value: BigDecimal? = null) {
+    constructor(id: UUID, owner: User?, currency: Currency, value: Long) : this(id, owner, currency, BigDecimal.valueOf(value))
     //constructor(id: UUID?, user: User, currency: Currency, balance: Int) : this(id, user, currency, BigDecimal.valueOf(balance.toLong()))
     //constructor(id: UUID, owner: User, currency: Currency) : this()
 
@@ -26,8 +22,7 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         private set
    /* val balance: Long
         get() = balanceDecimal!!.toLong()*/
-    val transactions: JSONArray?
-        get() = null
+
 
     val isActive: Boolean
         get() = true
@@ -50,6 +45,46 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         }
         // return null;
     }
+    //returns latest transactions
+    fun getTransactions(quantity: Int) : ArrayList<TransactionModel>{
+        val transactionList = ArrayList<TransactionModel>();
+        val (request, response, result) =  (VulcanEconomy.getApiURL() + "/account/${id}/transactions/$quantity").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson()
+        when (result) {
+            is Result.Failure-> {
+                val ex = result.getException()
+                println(ex)
+
+            }
+            is Result.Success -> {
+               // println(result.get().obj().toString(2));
+                val transactions = result.get().obj().getJSONArray("transactions");
+                //  println(data.toString())
+
+                for (i in 0 until transactions.length()) {
+                    val jsonObject = transactions.getJSONObject(i)
+                    //    println(jsonObject.toString());
+
+                    val id = UUID.fromString(jsonObject.getString("id"));
+                    val amount = jsonObject.getBigDecimal("debit_amount");
+                    val currency = Currency(UUID.fromString(jsonObject.getString("currency")));
+
+                    val debitPlayer = if(jsonObject.has("debit_account") && !jsonObject.isNull("debit_account")) Account(UUID.fromString(jsonObject.getString("debit_account")),null,  currency, 0) else null;
+                    val creditPlayer = if(jsonObject.has("credit_account") && !jsonObject.isNull("credit_account")) Account(UUID.fromString(jsonObject.getString("credit_account")), null, currency, 0) else null;
+                    val desc = if(jsonObject.has("description") && !jsonObject.isNull("description")) jsonObject.getString("description") else null;
+                    val plugin = if(jsonObject.has("plugin") && !jsonObject.isNull("plugin")) jsonObject.getString("plugin") else null;
+                    val time = jsonObject.getString("transaction_time")
+                    val transaction  : TransactionModel = TransactionModel(id, amount.toLong(), creditPlayer, debitPlayer, desc, plugin, currency, time)
+                   var transactionTime = jsonObject.getString("transaction_time")
+                    transactionTime=transactionTime.substring(0,transactionTime.length - 3);
+                    transactionList.add(transaction);
+
+                }
+                // data.obj().getString("id");
+
+            }
+        }
+        return transactionList;
+    }
 
     fun transferTo(currency: Currency, account: Account, amount: Long, description: String, plugin: String){
         balanceDecimal = balanceDecimal?.subtract(BigDecimal(amount))
@@ -64,7 +99,6 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
 
         if (type == Transaction.TransactionType.CREDIT) {
             return Transaction(currency = currency, amount = amount, description = description, plugin = plugin, creditPlayer = this.owner);
-
 
         } else if (type == Transaction.TransactionType.DEBIT) {
             return Transaction(currency = currency, amount = amount, description = description, plugin = plugin, debitPlayer = this.owner);
@@ -147,8 +181,9 @@ class Account(val id: UUID, val owner: User, val currency: Currency, value: BigD
         //println("updateBalance: " + this.balanceDecimal)
     }
 
+
     fun updateBalanceAsync(): CancellableRequest {
-        var httpAsync =( VulcanEconomy.getApiURL() + "/player/${owner.getID()}/currency/${currency.id}").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson() { request, response, result ->
+        var httpAsync =( VulcanEconomy.getApiURL() + "/player/${owner!!.getID()}/currency/${currency.id}").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson() { request, response, result ->
             //do something with response
            // println("test1");
             result.fold({ d ->

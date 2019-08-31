@@ -14,13 +14,23 @@ class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situat
     : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
-        sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top")
-        var top = plugin.accounts.getTop(plugin.currencies.defaultCurrency)
+        var currency = plugin.currencies.defaultCurrency;
+        if(args.size >= 1) {
+            var key = args[0];
+            if(plugin.currencies.getCurrency(key) != null) {
+                currency = plugin.currencies.getCurrency(key)!!;
+            } else {
+                sender.sendMessage(plugin.prefix + ChatColor.RED + "Invalid currency. Type /eco currencies")
+            }
+        }
+
+        sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top: " + currency.name)
+        var top = plugin.accounts.getTop(currency)
         top = top.subList(0, min(15, top.size))
         var i : Int = 1;
         for (acc in top) {
             try {
-                sender.sendMessage(org.bukkit.ChatColor.AQUA.toString() + "$i. ${net.vulcanmc.vulcaneconomy.UUIDConverter.getNameFromUUID(acc.owner.getID()!!)}, $${acc.getBalance().toLong()}")
+                sender.sendMessage(org.bukkit.ChatColor.AQUA.toString() + "$i. ${net.vulcanmc.vulcaneconomy.UUIDConverter.getNameFromUUID(acc.owner!!.getID()!!)}, $${acc.getBalance().toLong()}")
 
             } catch (e:Exception) {
 

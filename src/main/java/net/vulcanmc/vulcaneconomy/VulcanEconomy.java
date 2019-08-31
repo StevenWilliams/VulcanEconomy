@@ -13,6 +13,7 @@ import net.vulcanmc.vulcaneconomy.rest.Currencies;
 import net.vulcanmc.vulcaneconomy.rest.Currency;
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -86,6 +87,18 @@ public class VulcanEconomy extends JavaPlugin{
 */
 
 
+ public void reload() {
+     String serverIDstr = this.getConfig().getString("server-id");
+     this.serverID = UUID.fromString(serverIDstr);
+     this.apiURL = this.getConfig().getString("api-url");
+     this.apiUser = this.getConfig().getString("api-username");
+     this.apiPass = this.getConfig().getString("api-password");
+     username = apiUser;
+     password = apiPass;
+     accounts.getCache();
+     accounts.reloadCache();
+
+ }
     @Override
 
     public void onEnable() {
@@ -102,13 +115,6 @@ public class VulcanEconomy extends JavaPlugin{
         this.getCommand("transactions").setExecutor(new Transactions(this));
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        String serverIDstr = this.getConfig().getString("server-id");
-        this.serverID = UUID.fromString(serverIDstr);
-        this.apiURL = this.getConfig().getString("api-url");
-        this.apiUser = this.getConfig().getString("api-username");
-        this.apiPass = this.getConfig().getString("api-password");
-        username = apiUser;
-        password = apiPass;
         setupVault();
         this.resolver = HttpRepositoryService.forMinecraft();
         File file = new File("uuidcache.sqlite");
@@ -118,6 +124,7 @@ public class VulcanEconomy extends JavaPlugin{
         }
 
 accounts = new Accounts();
+        reload();
 
 
     }
@@ -220,5 +227,8 @@ accounts = new Accounts();
 
     public Currencies getCurrencies() {
         return currencies;
+    }
+    public String getPrefix() {
+        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("prefix"));
     }
 }

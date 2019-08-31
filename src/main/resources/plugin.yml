@@ -19,17 +19,17 @@ commands:
       permission-message: You don't have <permission>
    pay:
       description: Pay another player
-      usage: /<command> [player] [amount] (description)
+      usage: /<command> [player] (currency) [amount]
       permission: vulcan.economy.pay
       permission-message: You don't have <permission>
    economy:
       description: Manage the servers' economy
       aliases: [eco, ecomanage, economymanage, manageeco, manageeconomy]
-      usage: /<command> <give:take:set> [player] [amount] (description)
+      usage: /<command> <give:take:set:reload:currencies> [player] [amount] (currency)
       permission: vulcan.economy.manage
       permission-message: You don't have <permission>
    transactions:
       description: Show's a player's transactions
-      usage: /<command> [player]
+      usage: /<command> [player] (currency)
       permission: vulcan.economy.transactions
       permission-message: You don't have <permission>

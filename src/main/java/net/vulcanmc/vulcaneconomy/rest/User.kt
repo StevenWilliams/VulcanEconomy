@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 class User(private val uuid: UUID) {
-    private val player: OfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+    val player: OfflinePlayer = VulcanEconomy.getPlugin().server.getOfflinePlayer(uuid);
     private var account: Account? = null;
     private var id : UUID? = null;
 

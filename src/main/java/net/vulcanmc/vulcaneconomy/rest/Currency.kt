@@ -12,6 +12,8 @@ class Currency @JvmOverloads constructor(val id: UUID = defaultID, val name: Str
         get() = "Dollar"
     val namePlural: String
         get() = "Dollars"
+    var key : String? = null
+
 
     companion object {
         val defaultID: UUID

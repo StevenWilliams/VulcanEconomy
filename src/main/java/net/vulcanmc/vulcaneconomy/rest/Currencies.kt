@@ -8,6 +8,14 @@ import java.util.UUID
  * Created by steven on 23/12/14.
  */
 class Currencies {
+    fun getCurrency(key:String) : Currency? {
+        for(currency in currencies) {
+            if(key.equals(currency.key)) {
+                return currency;
+            }
+        }
+        return null;
+    }
     val defaultCurrency: Currency
         get() {
             val defKey : String? = VulcanEconomy.getPlugin().config.getString("default");
@@ -30,6 +38,7 @@ class Currencies {
                 val name :String? = currenciesSect.getString("$key.name");
                 val symbol:String? = currenciesSect.getString("$key.symbol")
                 val currency: Currency = Currency(uuid!!, name, symbol)
+                currency.key = key
                 currenciesList.add(currency)
             }
             return currenciesList;

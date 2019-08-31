@@ -20,23 +20,35 @@ class Balance(private val plugin: VulcanEconomy)// Store the plugin in situation
             val username = args[0]
             val uuid = Bukkit.getOfflinePlayer(username).uniqueId
             val acc = plugin.accounts.getAccount(uuid, defCurrency)
-            sender.sendMessage("Balance" + acc?.getBalance())
             val currencies: ArrayList<Currency> = plugin.currencies.currencies
             for(currency in currencies) {
                 val acc = plugin.accounts.getAccount(uuid, currency)
-                sender.sendMessage("Balance "  + acc?.getBalance(true) + acc?.currency?.symbol)
+                if (currency.id.equals(plugin.currencies.defaultCurrency.id)) {
+                    sender.sendMessage(plugin.prefix + "Main Balance: " + acc?.getBalance()?.toLong() + " "+ acc?.currency?.symbol)
+
+                } else {
+                    sender.sendMessage(plugin.prefix + acc?.getBalance(true)?.toLong() + " "+ acc?.currency?.symbol)
+
+                }
             }
         } else if (sender is Player && args.size < 1) {
 
             val acc = plugin.accounts.getAccount(sender, defCurrency)
 
-            sender.sendMessage("Balance" + acc?.getBalance(true) + acc?.currency?.symbol)
 
             val currencies: ArrayList<Currency> = plugin.currencies.currencies
             for(currency in currencies) {
                 val acc = plugin.accounts.getAccount(sender, currency)
-                sender.sendMessage("Balance "  + acc?.getBalance(true) + acc?.currency?.symbol)
+
+                if (currency.id.equals(plugin.currencies.defaultCurrency.id)) {
+                    sender.sendMessage(plugin.prefix + "Main Balance: " + acc?.getBalance()?.toLong() + " "+ acc?.currency?.symbol)
+
+                } else {
+                    sender.sendMessage(plugin.prefix + acc?.getBalance(true)?.toLong() + " "+ acc?.currency?.symbol)
+
+                }
             }
+
 
         }
         return true

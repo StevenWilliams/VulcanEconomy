@@ -38,7 +38,7 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
             }
         }
         //add dynamic currencies later
-        currency = Currency()
+        //currency = Currency()
     }
 
     override fun isEnabled(): Boolean {
@@ -196,9 +196,9 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
         //println("vaultapi withdraw5 $roundedamount")
 
         if (account.has(roundedamount)) {
-          //  println("vaultapi withdraw6")
+            println("vaultapi withdraw6")
 
-            //account.withdraw(roundedamount, "VaultAPI withdrawal")
+            account.withdraw(roundedamount, "VaultAPI withdrawal")
             val balance = account.getBalance(false).toLong().toDouble()
             println("VaultWithdrawSuccess" + System.currentTimeMillis().minus(time1))
 

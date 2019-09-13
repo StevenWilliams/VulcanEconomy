@@ -73,11 +73,16 @@ class Transactions(private val plugin: VulcanEconomy)// Store the plugin in situ
 
         for (transaction in transactions) {
             //println(account.id.toString() + transaction.creditPlayer?.id.toString())
-            if(account.id.equals(transaction.creditPlayer?.id)) {
-                sender.sendMessage(ChatColor.RED.toString() + "$${transaction.amount.toString()} | ${transaction.time} | ${transaction.plugin} | ${transaction.description}")
+            if(transaction == null) {
+                sender.sendMessage(ChatColor.YELLOW.toString() + "Error loading transaction.")
             } else {
-                sender.sendMessage(ChatColor.GREEN.toString() + "$${transaction.amount.toString()} | ${transaction.time} | ${transaction.plugin} | ${transaction.description}")
+                if(account.id.equals(transaction.creditPlayer?.id)) {
+                    sender.sendMessage(ChatColor.RED.toString() + "$${transaction.amount.toString()} | ${transaction.time} | ${transaction.plugin} | ${transaction.description}")
+                } else {
+                    sender.sendMessage(ChatColor.GREEN.toString() + "$${transaction.amount.toString()} | ${transaction.time} | ${transaction.plugin} | ${transaction.description}")
+                }
             }
+
         }
             return true
     }

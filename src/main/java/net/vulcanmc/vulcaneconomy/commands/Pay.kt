@@ -12,13 +12,14 @@ import org.bukkit.entity.Player
 import java.math.BigDecimal
 
 import java.util.UUID
+import kotlin.NumberFormatException as NumberFormatException1
 
 class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations where you need it.
     : CommandExecutor {
 
     fun isNumeric(strNum: String): Boolean {
         try {
-            val d = java.lang.Double.parseDouble(strNum)
+            val d = java.lang.Long.parseLong(strNum)
         } catch (nfe: NumberFormatException) {
             return false
         } catch (nfe: NullPointerException) {
@@ -29,7 +30,12 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
         //todo check against negative
         if (args.size >= 2) {
+            if(sender is Player && sender.name.equals(args[0])) {
+                sender.sendMessage(plugin.prefix + "You cannot pay yourself!");
+                return false;
+            }
             val uuid = Bukkit.getOfflinePlayer(args[0]).uniqueId
+
             var currency = plugin.currencies.defaultCurrency;
             var amount :Long = 0;
             if(isNumeric(args[1])) {
@@ -46,6 +52,7 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
                         return false;
                     }
                     if(!isNumeric(args[2])) {
+                        sender.sendMessage("Invalid amount. Cannot have decimals.")
                         return false;
                     }
                     amount = java.lang.Long.valueOf(args[2]);
@@ -58,7 +65,9 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
                 return false;
             }
 
+
             if (sender is Player) {
+
                 val user = plugin.accounts.getAccount(sender.uniqueId, currency)
                 val balance = user!!.getBalance();
                 if(balance.compareTo(BigDecimal(amount)) < 0) {
@@ -66,7 +75,7 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
                     return false;
                 }
                 user!!.transferTo(currency, target!!, amount, "Payment from ${sender.name} to ${target.owner?.offlinePlayer?.name}", "VulcanEconomy")
-                sender.sendMessage(plugin.prefix + "Payment sent. Your balance is now: ${user.getBalance()} ${currency.name}.");
+                sender.sendMessage(plugin.prefix + "Payment sent. Your balance is now: ${user.getBalance().toLong()} ${currency.name}.");
                 if(target.owner?.offlinePlayer!!.isOnline) {
                     val targetPlayer = target.owner?.offlinePlayer.player;
                     targetPlayer.sendMessage(plugin.prefix + "You have received a payment of $amount ${currency.name} from ${sender.name}")

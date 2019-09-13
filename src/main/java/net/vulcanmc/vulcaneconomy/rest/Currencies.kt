@@ -24,7 +24,9 @@ class Currencies {
             val uuid : UUID? = UUID.fromString(uuidString);
             val name : String? = currenciesSect?.getString("$defKey.name")
             val symbol : String? = currenciesSect?.getString("$defKey.symbol")
-            return Currency(uuid!!, name, symbol);
+            var currency = Currency(uuid!!, name, symbol);
+            currency.key = defKey;
+            return currency;
         }
     val currencies: ArrayList<Currency>
         get() {

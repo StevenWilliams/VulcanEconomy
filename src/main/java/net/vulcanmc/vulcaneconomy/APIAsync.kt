@@ -1,11 +1,12 @@
 package net.vulcanmc.vulcaneconomy
 
 import net.vulcanmc.vulcaneconomy.rest.Account
+import org.bukkit.plugin.java.JavaPlugin
 
-class APIAsync {
-    fun withdraw(account: Account, amount: Long, success: Runnable, failure: Runnable) {
+class APIAsync (val plugin : JavaPlugin) {
+    fun withdraw(account: Account, amount: Long, message : String, success: Runnable, failure: Runnable) {
         Thread () {
-            if (account.withdraw(amount)) {
+            if (account.withdraw(amount, message, plugin.name)) {
                 success.run()
             } else {
                 failure.run();
@@ -15,7 +16,7 @@ class APIAsync {
     fun deposit(account: Account, amount: Long, message : String, success: Runnable, failure:
     Runnable) {
         Thread () {
-            if (account.deposit(amount)) {
+            if (account.deposit(amount, message, plugin.name)) {
                 success.run()
             } else {
                 failure.run();

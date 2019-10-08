@@ -25,10 +25,10 @@ class Balance(private val plugin: VulcanEconomy)// Store the plugin in situation
         if (args.size >= (posCounter+1)) {
             val username = args[posCounter]
             val uuid = Bukkit.getOfflinePlayer(username).uniqueId
-            val acc = plugin.accounts.getAccount(uuid, defCurrency)
+            val acc = plugin.accounts!!.getAccount(uuid, defCurrency)
             val currencies: ArrayList<Currency> = plugin.currencies.currencies
             for(currency in currencies) {
-                val acc = plugin.accounts.getAccount(uuid, currency)
+                val acc = plugin.accounts!!.getAccount(uuid, currency)
                 if (currency.id.equals(plugin.currencies.defaultCurrency.id)) {
                     sender.sendMessage(plugin.prefix + "Main Balance: " + acc?.getBalance(useCache)?.toLong() + " "+ acc?.currency?.symbol)
 
@@ -39,12 +39,12 @@ class Balance(private val plugin: VulcanEconomy)// Store the plugin in situation
             }
         } else if (sender is Player && args.size < (posCounter+1)) {
 
-            val acc = plugin.accounts.getAccount(sender, defCurrency)
+            val acc = plugin.accounts!!.getAccount(sender, defCurrency)
 
 
             val currencies: ArrayList<Currency> = plugin.currencies.currencies
             for(currency in currencies) {
-                val acc = plugin.accounts.getAccount(sender, currency)
+                val acc = plugin.accounts!!.getAccount(sender, currency)
 
                 if (currency.id.equals(plugin.currencies.defaultCurrency.id)) {
                     sender.sendMessage(plugin.prefix + "Main Balance: " + acc?.getBalance(useCache)?.toLong() + " "+ acc?.currency?.symbol)

@@ -58,7 +58,7 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
                     amount = java.lang.Long.valueOf(args[2]);
                 }
             }
-            val target = plugin.accounts.getAccount(uuid, currency)
+            val target = plugin.accounts!!.getAccount(uuid, currency)
 
             if(amount < 0) {
                 sender.sendMessage("Amount cannot be negative.")
@@ -68,7 +68,7 @@ class Pay(private val plugin: VulcanEconomy)// Store the plugin in situations wh
 
             if (sender is Player) {
 
-                val user = plugin.accounts.getAccount(sender.uniqueId, currency)
+                val user = plugin.accounts!!.getAccount(sender.uniqueId, currency)
                 val balance = user!!.getBalance();
                 if(balance.compareTo(BigDecimal(amount)) < 0) {
                     sender.sendMessage(plugin.prefix + ChatColor.RED + "You do not have enough money.")

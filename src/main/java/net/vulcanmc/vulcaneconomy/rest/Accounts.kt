@@ -22,7 +22,7 @@ class Accounts {
     private val cacheMap = HashMap<String, Account>();
     private var f : File;
     init {
-        f = File(VulcanEconomy.getPlugin().dataFolder.toString() + "/accounts.yml")
+        f = File(VulcanEconomy.plugin!!.dataFolder.toString() + "/accounts.yml")
         if (!f.exists()) {
             try {
                 f.createNewFile()
@@ -42,7 +42,7 @@ class Accounts {
         try {
             getCache().save(f);
         } catch (ex : IOException) {
-            VulcanEconomy.getPlugin().getLogger().log(Level.SEVERE, "Could not save config to " + f, ex);
+            VulcanEconomy.plugin!!.getLogger().log(Level.SEVERE, "Could not save config to " + f, ex);
         }
 
     }
@@ -54,7 +54,7 @@ class Accounts {
     }
     fun reloadCache() {
         if (cache == null) {
-            f = File(VulcanEconomy.getPlugin().getDataFolder(), "customConfig.yml")
+            f = File(VulcanEconomy.plugin!!.getDataFolder(), "customConfig.yml")
         }
         cache = YamlConfiguration.loadConfiguration(f)
     }
@@ -64,7 +64,7 @@ class Accounts {
     }
 
     fun removeAccountsFromCache(playerID : UUID) {
-        val currencies: ArrayList<Currency> = VulcanEconomy.getPlugin().currencies.currencies;
+        val currencies: ArrayList<Currency> = VulcanEconomy.plugin!!.currencies.currencies;
         for(currency in currencies) {
             removeAccountFromCache(playerID, currency)
         }
@@ -99,7 +99,7 @@ class Accounts {
             //cache.set();
             val time2 = System.currentTimeMillis();
 
-            val (request, response, result) =  (VulcanEconomy.getApiURL() + "/player/${uniqueId}/currency/${currency.id}").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson()
+            val (request, response, result) =  (VulcanEconomy.apiURL + "/player/${uniqueId}/currency/${currency.id}").httpGet().authentication().basic(VulcanEconomy.username, VulcanEconomy.password).responseJson()
             when (result) {
                 is Result.Failure-> {
                     val ex = result.getException()
@@ -135,7 +135,7 @@ class Accounts {
     }
     fun getTop(currency: Currency) : List<Account>{
         var accountsTop = ArrayList<Account>();
-        val (request, response, result) =  (VulcanEconomy.getApiURL() + "/accounts/top/${currency.id}/").httpGet().authentication().basic(VulcanEconomy.getUsername(), VulcanEconomy.getPassword()).responseJson()
+        val (request, response, result) =  (VulcanEconomy.apiURL + "/accounts/top/${currency.id}/").httpGet().authentication().basic(VulcanEconomy.username, VulcanEconomy.password).responseJson()
         when (result) {
             is Result.Failure-> {
                 val ex = result.getException()

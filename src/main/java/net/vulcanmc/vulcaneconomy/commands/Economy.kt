@@ -33,7 +33,7 @@ class Economy(private val plugin: VulcanEconomy)// Store the plugin in situation
         }
         if (args.size >= 3) {
             //target uuid
-            val uuid = VulcanEconomy.getPlugin().getUUID(args[1])
+            val uuid = VulcanEconomy.plugin!!.getUUID(args[1])
             if (uuid == null) {
                 sender.sendMessage(ChatColor.RED.toString() + "Null profile lookup for " + args[1])
                 return false

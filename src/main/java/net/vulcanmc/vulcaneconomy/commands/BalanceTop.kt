@@ -15,18 +15,23 @@ class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situat
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
         var currency = plugin.currencies.defaultCurrency;
-        if(args.size >= 1) {
+        var amount = 15;
+        if(args.size >= 2) {
             var key = args[0];
             if(plugin.currencies.getCurrency(key) != null) {
                 currency = plugin.currencies.getCurrency(key)!!;
             } else {
                 sender.sendMessage(plugin.prefix + ChatColor.RED + "Invalid currency. Type /eco currencies")
             }
+            amount = Integer.valueOf(args[1])
+        } else if (args.size == 1) {
+            amount = Integer.valueOf(args[0])
         }
 
+
         sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top: " + currency.name)
-        var top = plugin.accounts.getTop(currency)
-        top = top.subList(0, min(15, top.size))
+        var top = plugin.accounts!!.getTop(currency)
+        top = top.subList(0, min(amount, top.size))
         var i : Int = 1;
         for (acc in top) {
             try {

@@ -5,7 +5,7 @@ api-url: "http://localhost:8000/"
 backup-api-url: "http://localhost:8000/"
 default: "default"
 prefix: '&4Lares &c>> '
-'''currencies:
+currencies:
   default:
     name: "Dollars"
     symbol: "$"
@@ -15,7 +15,7 @@ prefix: '&4Lares &c>> '
     name: "Tokens"
     symbol: "Tokens"
     symbol-location: "after"
-    id: "81867671-d1c7-4fc5-a266-8f1beacd145a"'''
+    id: "81867671-d1c7-4fc5-a266-8f1beacd145a"
 
 
 #Ignored

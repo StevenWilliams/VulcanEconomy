@@ -18,8 +18,8 @@ class Currencies {
     }
     val defaultCurrency: Currency
         get() {
-            val defKey : String? = VulcanEconomy.getPlugin().config.getString("default");
-            val currenciesSect: ConfigurationSection? = VulcanEconomy.getPlugin().config.getConfigurationSection("currencies")
+            val defKey : String? = VulcanEconomy.plugin!!.config.getString("default");
+            val currenciesSect: ConfigurationSection? = VulcanEconomy.plugin!!.config.getConfigurationSection("currencies")
             val uuidString : String? = currenciesSect!!.getString("$defKey.id");
             val uuid : UUID? = UUID.fromString(uuidString);
             val name : String? = currenciesSect?.getString("$defKey.name")
@@ -30,7 +30,7 @@ class Currencies {
         }
     val currencies: ArrayList<Currency>
         get() {
-            val currenciesSect: ConfigurationSection? = VulcanEconomy.getPlugin().config.getConfigurationSection("currencies")
+            val currenciesSect: ConfigurationSection? = VulcanEconomy.plugin!!.config.getConfigurationSection("currencies")
             val keys: MutableSet<String> = currenciesSect!!.getKeys(false);
             val currenciesList : ArrayList<Currency> = ArrayList<Currency>();
 

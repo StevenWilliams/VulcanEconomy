@@ -15,6 +15,13 @@ class Currency @JvmOverloads constructor(val id: UUID = defaultID, val name: Str
     var key : String? = null
 
 
+    fun format(value : Long) : String {
+        return if(symbloc =="after") {
+            "${value} ${symbol}";
+        } else {
+            "${symbol}${value}"
+        }
+    }
     companion object {
         val defaultID: UUID
             get() = UUID.fromString("f0aa6d41-1931-4c3a-8576-4d175779cb51")

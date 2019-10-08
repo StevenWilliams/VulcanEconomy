@@ -21,9 +21,9 @@ import java.util.logging.Logger
 
 class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
     private val name = "VulcanEconomy"
-    private var vulcaneco: VulcanEconomy? = VulcanEconomy.getPlugin()
-    private var plugin : Plugin = VulcanEconomy.getPlugin()
-    private var currency = VulcanEconomy.getPlugin().currencies.defaultCurrency
+    private var vulcaneco: VulcanEconomy? = VulcanEconomy.plugin
+    private var plugin : Plugin = VulcanEconomy.plugin!!
+    private var currency = VulcanEconomy.plugin!!.currencies.defaultCurrency
 
     init {
         this.plugin = plugin
@@ -154,6 +154,10 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
         }
     }
 
+    fun withdraw(success: Runnable) : Boolean {
+        println("test")
+        return true;
+    }
     override fun createPlayerAccount(playername: String, world: String): Boolean {
         return createPlayerAccount(playername)
     }
@@ -282,7 +286,7 @@ class Economy_VulcanEco(plugin: Plugin) : AbstractEconomy() {
 
     companion object {
 
-        private val log = VulcanEconomy.getPlugin().logger
+        private val log = VulcanEconomy.plugin!!.logger
     }
 
 }

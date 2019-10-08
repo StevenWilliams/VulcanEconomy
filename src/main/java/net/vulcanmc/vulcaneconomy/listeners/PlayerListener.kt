@@ -33,7 +33,7 @@ class PlayerListener(private val plugin: VulcanEconomy) : Listener {
     fun onPlayerQuit(event: PlayerQuitEvent) {
         println("playerquit VulcanEco")
 
-        plugin.accounts.removeAccountsFromCache(event.player.uniqueId)
+        plugin.accounts!!.removeAccountsFromCache(event.player.uniqueId)
     }
 
 }

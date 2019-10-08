@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 class User(private val uuid: UUID) {
-    val player: OfflinePlayer = VulcanEconomy.getPlugin().server.getOfflinePlayer(uuid);
+    val player: OfflinePlayer = VulcanEconomy.plugin!!.server.getOfflinePlayer(uuid);
     private var account: Account? = null;
     private var id : UUID? = null;
 
@@ -21,8 +21,8 @@ class User(private val uuid: UUID) {
     }
 
     fun getAccount(currency: Currency): Account? {
-        return VulcanEconomy.getPlugin().accounts.getAccount(player, currency)
-;
+        return VulcanEconomy.plugin!!.accounts!!.getAccount(player, currency)
+
     }
 
     fun createAccount(currency: Currency): Account? {

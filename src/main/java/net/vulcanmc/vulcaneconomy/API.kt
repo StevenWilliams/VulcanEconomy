@@ -5,12 +5,13 @@ import net.vulcanmc.vulcaneconomy.rest.Currency
 import net.vulcanmc.vulcaneconomy.rest.User
 import org.bukkit.OfflinePlayer
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 
 import java.util.ArrayList
 
 class API(plugin: Plugin) : IAPI {
     override fun getCurrency(key: String): Currency? {
-        return vulcanEconomy.currencies.getCurrency(key);
+        return vulcanEconomy!!.currencies.getCurrency(key);
     }
 
     private var plugin: Plugin? = null
@@ -78,11 +79,20 @@ class API(plugin: Plugin) : IAPI {
         return user!!.getAccount(currency)
     }
 
+    fun withdraw(player : OfflinePlayer, amount : Long, currency : Currency = defaultCurrency, success:
+    BukkitRunnable,
+                 failure : BukkitRunnable) {
+        if(withdraw(player, amount)) {
+            success.runTaskAsynchronously(plugin)
+        } else {
+            failure.runTaskAsynchronously(plugin);
+        }
+    }
     companion object {
-        private val vulcanEconomy = VulcanEconomy.getPlugin()
+        private val vulcanEconomy = VulcanEconomy.plugin
         val defaultCurrency: Currency
-            get() = vulcanEconomy.currencies.defaultCurrency
+            get() = vulcanEconomy!!.currencies.defaultCurrency
         val currencies: ArrayList<Currency>
-            get() = vulcanEconomy.currencies.currencies
+            get() = vulcanEconomy!!.currencies.currencies
     }
 }

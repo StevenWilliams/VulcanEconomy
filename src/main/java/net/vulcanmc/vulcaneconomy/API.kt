@@ -74,7 +74,7 @@ class API(plugin: Plugin) : IAPI {
         return withdraw(player, defaultCurrency, amount, "")
     }
 
-    private fun getPlayerAccount(player: OfflinePlayer, currency: Currency = defaultCurrency): Account? {
+    fun getPlayerAccount(player: OfflinePlayer, currency: Currency = defaultCurrency): Account? {
         val user = User(player.uniqueId)
         return user!!.getAccount(currency)
     }

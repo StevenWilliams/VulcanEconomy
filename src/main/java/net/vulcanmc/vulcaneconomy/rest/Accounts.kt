@@ -54,7 +54,7 @@ class Accounts {
     }
     fun reloadCache() {
         if (cache == null) {
-            f = File(VulcanEconomy.plugin!!.getDataFolder(), "customConfig.yml")
+            f =         f = File(VulcanEconomy.plugin!!.dataFolder.toString() + "/accounts.yml")
         }
         cache = YamlConfiguration.loadConfiguration(f)
     }

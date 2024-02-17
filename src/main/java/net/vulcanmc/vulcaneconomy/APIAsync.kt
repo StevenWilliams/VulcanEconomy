@@ -11,7 +11,7 @@ class APIAsync (val plugin : JavaPlugin) {
             } else {
                 failure.run();
             }
-        }.run();
+        }.start();
     }
     fun deposit(account: Account, amount: Long, message : String, success: Runnable, failure:
     Runnable) {
@@ -21,7 +21,7 @@ class APIAsync (val plugin : JavaPlugin) {
             } else {
                 failure.run();
             }
-        }.run();
+        }.start();
     }
     fun has(account : Account, amount:Long, hasAmount : Runnable, doesNot : Runnable) {
         Thread() {
@@ -30,6 +30,6 @@ class APIAsync (val plugin : JavaPlugin) {
             } else {
                 doesNot.run();
             }
-        }
+        }.start()
     }
 }

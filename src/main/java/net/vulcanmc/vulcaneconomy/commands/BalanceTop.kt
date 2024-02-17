@@ -1,10 +1,8 @@
 package net.vulcanmc.vulcaneconomy.commands
 
 import net.vulcanmc.vulcaneconomy.UUIDConverter
-import net.vulcanmc.vulcaneconomy.rest.Account
-import org.bukkit.ChatColor
 import net.vulcanmc.vulcaneconomy.VulcanEconomy
-import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -14,12 +12,12 @@ class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situat
     : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
-        var currency = plugin.currencies.defaultCurrency;
-        var amount = 15;
+        var currency = plugin.currencies.defaultCurrency
+        var amount = 15
         if(args.size >= 2) {
-            var key = args[0];
+            val key = args[0]
             if(plugin.currencies.getCurrency(key) != null) {
-                currency = plugin.currencies.getCurrency(key)!!;
+                currency = plugin.currencies.getCurrency(key)!!
             } else {
                 sender.sendMessage(plugin.prefix + ChatColor.RED + "Invalid currency. Type /eco currencies")
             }
@@ -32,15 +30,15 @@ class BalanceTop(private val plugin: VulcanEconomy)// Store the plugin in situat
         sender.sendMessage(ChatColor.GOLD.toString() + "Balance Top: " + currency.name)
         var top = plugin.accounts!!.getTop(currency)
         top = top.subList(0, min(amount, top.size))
-        var i : Int = 1;
+        var i = 1
         for (acc in top) {
             try {
-                sender.sendMessage(org.bukkit.ChatColor.AQUA.toString() + "$i. ${net.vulcanmc.vulcaneconomy.UUIDConverter.getNameFromUUID(acc.owner!!.getID()!!)}, $${acc.getBalance().toLong()}")
+                sender.sendMessage(org.bukkit.ChatColor.AQUA.toString() + "$i. ${UUIDConverter.getNameFromUUID(acc.owner!!.getID()!!)}, $${acc.getBalance().toLong()}")
 
             } catch (e:Exception) {
 
             }
-            i++;
+            i++
         }
         return true
     }

@@ -1,29 +1,22 @@
 package net.vulcanmc.vulcaneconomy
 
 
-import com.sk89q.squirrelid.Profile
-import com.sk89q.squirrelid.cache.SQLiteCache
-import com.sk89q.squirrelid.resolver.HttpRepositoryService
-import com.sk89q.squirrelid.resolver.ProfileService
-import kong.unirest.Unirest
 import net.vulcanmc.vulcaneconomy.commands.*
 import net.vulcanmc.vulcaneconomy.listeners.PlayerListener
 import net.vulcanmc.vulcaneconomy.rest.Accounts
 import net.vulcanmc.vulcaneconomy.rest.Currencies
-import net.vulcanmc.vulcaneconomy.rest.Currency
 import net.vulcanmc.vulcaneconomy.vault.Economy_VulcanEco
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
+import org.enginehub.squirrelid.resolver.HttpRepositoryService
+import org.enginehub.squirrelid.resolver.ProfileService
 
 import java.io.File
 import java.io.IOException
-import java.util.Arrays
 import java.util.UUID
 
 //import static net.vulcanmc.vulcaneconomy.vault.ScoreboardLoader.load;
@@ -32,7 +25,6 @@ class VulcanEconomy : JavaPlugin {
   //  private var apiURL: String = ""
     private var serverID: UUID? = null
     private lateinit var resolver : ProfileService
-    val cache: SQLiteCache? = null
     var apiUser: String = ""
         private set
     var apiPass: String = ""
@@ -50,11 +42,6 @@ class VulcanEconomy : JavaPlugin {
 
     protected constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File) : super(loader, description, dataFolder, file) {}
 
-    /*   public RequestsQueue getQueue() {
-        return queue;
-    }
-*/
-
 
     fun reload() {
         val serverIDstr = this.config.getString("server-id")
@@ -64,7 +51,7 @@ class VulcanEconomy : JavaPlugin {
         this.apiPass = this.config.getString("api-password")
         username = this.apiUser
         password = this.apiPass
-        accounts!!.getCache()
+        accounts!!.cache
         accounts!!.reloadCache()
 
     }
@@ -98,46 +85,21 @@ class VulcanEconomy : JavaPlugin {
 
     }
 
-    fun getUUIDIfExists(playername: String): UUID? {
-        return if (Bukkit.getPlayer(playername) != null) {
-            Bukkit.getPlayer(playername).uniqueId
+    fun getUUIDIfExists(playerName: String): UUID? {
+        return if (Bukkit.getPlayer(playerName) != null) {
+            Bukkit.getPlayer(playerName).uniqueId
         } else null
-        /*
-
-        Integer playerid;
-        UUID uuid = null;
-        //this.player = (Player) player;
-        try {
-            JsonNode response = Unirest.get(VulcanEconomy.getApiURL() + "players/").basicAuth(this.getApiUser(), this.getApiPass()).asJson().getBody();
-
-            JSONArray data = response.getObject().getJSONArray("data");
-
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject object = data.getJSONObject(i);
-                String usernameobject = object.getString("username");
-                if(usernameobject.equals(playername)) {
-                    playerid = object.getInt("id");
-                    uuid = UUID.fromString(object.getString("uuid"));
-                    return uuid;
-                }
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }*/
-
     }
 
-    fun getUUID(playername: String): UUID? {
-        if (Bukkit.getPlayer(playername) != null) {
-            return Bukkit.getPlayer(playername).uniqueId
+    fun getUUID(playerName: String): UUID? {
+        if (Bukkit.getPlayer(playerName) != null) {
+            return Bukkit.getPlayer(playerName).uniqueId
         }
 
-        val playerid: Int?
-        var uuid = getUUIDIfExists(playername)
+        var uuid = getUUIDIfExists(playerName)
         if (uuid == null) {
             try {
-                val profile = this.resolver!!.findByName(playername)
-
+                val profile = this.resolver!!.findByName(playerName)
                 if (profile != null) {
                     uuid = profile!!.getUniqueId()
                     return uuid
@@ -148,16 +110,16 @@ class VulcanEconomy : JavaPlugin {
                 e.printStackTrace()
             }
 
+        } else {
+            return uuid;
         }
-        return Bukkit.getOfflinePlayer(playername).uniqueId
-        //lookup with usernmae instead of uuid. fall back with mojang api
+        return Bukkit.getOfflinePlayer(playerName).uniqueId //todo: check if this is ever reached?
     }
 
     override fun onDisable() {
         for (player in server.onlinePlayers) {
             accounts!!.removeAccountsFromCache(player.uniqueId)
         }
-        Unirest.shutDown()
 
         plugin = null
     }

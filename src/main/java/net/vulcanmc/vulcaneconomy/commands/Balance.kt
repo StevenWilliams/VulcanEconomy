@@ -16,7 +16,7 @@ class Balance(private val plugin: VulcanEconomy)// Store the plugin in situation
 
         val defCurrency = plugin.currencies.defaultCurrency;
 
-         var posCounter = 0;
+        var posCounter = 0;
         var useCache = true;
         if(args.size>=1 && (args[0].equals("false") )){
             useCache=false;

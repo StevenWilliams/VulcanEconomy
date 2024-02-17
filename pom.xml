@@ -17,6 +17,11 @@
 
     <repositories>
         <repository>
+            <id>enginehub-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+
+        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
@@ -26,10 +31,8 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-            <repository>
-                <id>sk89q-repo</id>
-                <url>http://maven.sk89q.com/repo/</url>
-            </repository>
+
+
 
     </repositories>
     <dependencies>
@@ -43,24 +46,21 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.milkbowl.vault</groupId>
+            <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
+            <scope>provided</scope>
         </dependency>
 
+
         <dependency>
-            <groupId>com.konghq</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>2.3.14</version>
-            <classifier>standalone</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q</groupId>
+            <groupId>org.enginehub</groupId>
             <artifactId>squirrelid</artifactId>
-            <version>0.1.0</version>
+            <version>0.3.0</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -118,7 +118,19 @@
             <artifactId>result</artifactId>
             <version>2.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.4</version>
+            <type>maven-plugin</type>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.7</version>
+            <type>maven-plugin</type>
+        </dependency>
     </dependencies>
     <build>
         <defaultGoal>package install</defaultGoal>
@@ -128,7 +140,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
